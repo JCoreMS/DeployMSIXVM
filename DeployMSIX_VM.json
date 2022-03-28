@@ -205,7 +205,7 @@
                             "timestamp": "[parameters('Timestamp')]"
                         },
                         "protectedSettings": {
-                            "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File New-AzureMsixAppAttachImage.ps1 -FileShareName ', parameters('FileShareName'), ' -StorageAccountKey ', parameters('StorageAccountKey'), ' -StorageAccountName ', parameters('StorageAccountName'))]"
+                            "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File New-AzureMsixAppAttachImage.ps1 -FileShareName ', parameters('FileShareName'), ' -StorageAccountKey ', parameters('StorageAccountKey'), ' -StorageAccountName ', parameters('StorageAccountName'), ' -VMUserName ', parameters('VmUsername'), ' -VMUserPassword ', parameters('VmPassword'))]"
                         }
                     }
                 }
