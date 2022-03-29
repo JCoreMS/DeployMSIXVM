@@ -88,8 +88,8 @@ Invoke-Command -scriptblock {
 
     # Map Drive for MSIX Share
     "Mapping MSIX Share to M:"
-    cmd.exe /C "cmdkey /add:`"$StorageAccountName.file.core.windows.net`" /user:`"localhost\$StorageAccountName`" /pass:`"$StorageAccountKey`""
-    New-PSDrive -Name M -PSProvider FileSystem -Root "\\$StorageAccountName.file.core.windows.net\$FileShareName" -Persist
+    cmd.exe /C "cmdkey /add:`"$Using:StorageAccountName.file.core.windows.net`" /user:`"localhost\$Using:StorageAccountName`" /pass:`"$Using:StorageAccountKey`""
+    New-PSDrive -Name M -PSProvider FileSystem -Root "\\$Using:StorageAccountName.file.core.windows.net\$Using:FileShareName" -Persist
     If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log}
     Else{"-----ERROR-----`n$Error" | Out-File $Log; $Error.Clear()}
 

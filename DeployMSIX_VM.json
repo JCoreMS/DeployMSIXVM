@@ -55,7 +55,7 @@
         },
         "SubnetName": {
             "type": "string",
-            "defaultValue": "subnet-eastus2-AVDLab-Management"
+            "defaultValue": "sub-eus2-extv-wkstns"
         },
         "Tags": {
             "type": "object",
@@ -67,11 +67,11 @@
         },
         "VirtualNetworkName": {
             "type": "string",
-            "defaultValue": "vnet-EastUS2-AVDLab"
+            "defaultValue": "vnet-eastus2-External"
         },
         "VirtualNetworkResourceGroupName": {
             "type": "string",
-            "defaultValue": "rg-eastus2-LandingZone"
+            "defaultValue": "rg-eastus2-AVDLab-Manage"
         },
         "VmName": {
             "type": "string",
