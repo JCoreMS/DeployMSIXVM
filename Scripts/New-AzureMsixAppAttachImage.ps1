@@ -26,16 +26,13 @@ $Log = "C:\PostConfig.log"
 New-Item $Log
 Get-Date | Out-file $Log
 
-$VMUserName | Out-File $Log -Append
-$VMUserPassword | Out-File $Log -Append
-
 $Username = $ENV:COMPUTERNAME + '\' + $VMUserName
 $Password = ConvertTo-SecureString -String $VMUserPassword -AsPlainText -Force
 [pscredential]$Credential = New-Object System.Management.Automation.PSCredential ($Username, $Password)
 
 $Username | Out-File $Log -Append
 
-Enable-PSRemoting -Force
+#Enable-PSRemoting -Force
 
 Invoke-Command -ComputerName $ENV:COMPUTERNAME -Credential $Credential -ScriptBlock {
     $Error.Clear()
