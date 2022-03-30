@@ -116,31 +116,6 @@
             }
         },
         {
-            "comments": "---------- KEY VAULT ----------",
-            "type": "Microsoft.Network/networkInterfaces",
-            "apiVersion": "2020-05-01",
-            "name": "[parameters('NicName')]",
-            "location": "[parameters('Location')]",
-            "tags": "[parameters('Tags')]",
-            "properties": {
-                "ipConfigurations": [
-                    {
-                        "name": "ipconfig",
-                        "properties": {
-                            "privateIPAllocationMethod": "Dynamic",
-                            "subnet": {
-                                "id": "[resourceId(subscription().subscriptionId, parameters('VirtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets', parameters('VirtualNetworkName'), parameters('SubnetName'))]"
-                            },
-                            "primary": true,
-                            "privateIPAddressVersion": "IPv4"
-                        }
-                    }
-                ],
-                "enableAcceleratedNetworking": false,
-                "enableIPForwarding": false
-            }
-        },
-        {
             "comments": "---------- VIRTUAL MACHINES ----------",
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2019-07-01",
