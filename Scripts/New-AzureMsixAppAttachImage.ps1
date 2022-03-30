@@ -33,6 +33,8 @@ $Username = $ENV:COMPUTERNAME + '\' + $VMUserName
 $Password = ConvertTo-SecureString -String $VMUserPassword -AsPlainText -Force
 [pscredential]$Credential = New-Object System.Management.Automation.PSCredential ($Username, $Password)
 
+$Username | Out-File $Log -Append
+
 Enable-PSRemoting -Force
 
 Invoke-Command -ComputerName $ENV:COMPUTERNAME -Credential $Credential -ScriptBlock {
@@ -45,7 +47,7 @@ Invoke-Command -ComputerName $ENV:COMPUTERNAME -Credential $Credential -ScriptBl
     New-Item -Path "C:\MSIX\Scripts" -ItemType Directory
     If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
     Else{"-----ERROR-----`n$Error" | Out-File $Log -Append; $Error.Clear()}
-    
+
     # Turn off auto updates
     "Turn Off Auto Updates via Registry and Disable Scheduled Tasks" | Out-File $Log -Append
     reg add HKLM\Software\Policies\Microsoft\WindowsStore /v AutoDownload /t REG_DWORD /d 0 /f
