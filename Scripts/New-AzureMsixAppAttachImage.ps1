@@ -21,6 +21,14 @@ Param(
     [string]$VMUserPassword
 )
 
+# Create Log file for output and troublehsooting
+$Log = "C:\PostConfig.log"
+New-Item $Log
+Get-Date | Out-file $Log
+
+$VMUserName | Out-File $Log
+$VMUserPassword | Out-File $Log
+
 $VMUserPassword = ConvertTo-SecureString -String $VMUserPassword -AsPlainText -Force
 $Creds = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $VMUserName, $VMUserPassword
 
@@ -30,14 +38,10 @@ Invoke-Command -ComputerName $ENV:COMPUTERNAME -Credential $Creds -ScriptBlock {
     $Error.Clear()
 
     #Make Local MSIX Dir for tools
+    "Creating Directories" | Out-File $Log
     New-Item -Path "C:\MSIX" -ItemType Directory
     New-Item -Path "C:\MSIX\Packages" -ItemType Directory
     New-Item -Path "C:\MSIX\Scripts" -ItemType Directory
-
-    # Create Log file for output and troublehsooting
-    $Log = "C:\MSIX\PostConfig.log"
-    New-Item $Log
-    Get-Date | Out-file $Log
 
     # Turn off auto updates
     "Turn Off Auto Updates via Registry and Disable Scheduled Tasks" | Out-File $Log
