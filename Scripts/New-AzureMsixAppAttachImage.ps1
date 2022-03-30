@@ -29,12 +29,13 @@ Get-Date | Out-file $Log
 $VMUserName | Out-File $Log
 $VMUserPassword | Out-File $Log
 
-$VMUserPassword = ConvertTo-SecureString -String $VMUserPassword -AsPlainText -Force
-$Creds = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $VMUserName, $VMUserPassword
+$Username = $ENV:COMPUTERNAME + '\' + $VMUserName
+$Password = ConvertTo-SecureString -String $VMUserPassword -AsPlainText -Force
+[pscredential]$Credential = New-Object System.Management.Automation.PSCredential ($Username, $Password)
 
 Enable-PSRemoting -Force
 
-Invoke-Command -ComputerName $ENV:COMPUTERNAME -Credential $Creds -ScriptBlock {
+Invoke-Command -ComputerName $ENV:COMPUTERNAME -Credential $Credential -ScriptBlock {
     $Error.Clear()
 
     #Make Local MSIX Dir for tools
