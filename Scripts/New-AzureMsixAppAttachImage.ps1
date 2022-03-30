@@ -24,8 +24,9 @@ Param(
 $VMUserPassword = ConvertTo-SecureString -String $VMUserPassword -AsPlainText -Force
 $Creds = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $VMUserName, $VMUserPassword
 
-Invoke-Command -scriptblock {
+Enable-PSRemoting -Force
 
+Invoke-Command -ComputerName $ENV:COMPUTERNAME -Credential $Creds -ScriptBlock {
     $Error.Clear()
 
     #Make Local MSIX Dir for tools
@@ -95,4 +96,5 @@ Invoke-Command -scriptblock {
 
     "-------------------------- END SCRIPT RUN ------------------------" | Out-File $Log
     
-} -Credential $Creds
+}
+Disable-PSRemoting -Force
