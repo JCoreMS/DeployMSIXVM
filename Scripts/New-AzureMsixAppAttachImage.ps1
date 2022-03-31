@@ -46,7 +46,7 @@ If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
 Else{"-----ERROR-----`n$Error" | Out-File $Log -Append; $Error.Clear()}
 
 "Installing Azure PowerShell Cmdlets" | Out-File $Log -Append
-Install-Module -Name Az.Storage -Force -Confirm $False
+Install-Module -Name Az.Storage -Force
 If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
 Else{"-----ERROR-----`n$Error" | Out-File $Log -Append; $Error.Clear()}
 
@@ -85,8 +85,6 @@ Else{"-----ERROR-----`n$Error" | Out-File $Log -Append; $Error.Clear()}
 Invoke-WebRequest -URI "https://raw.githubusercontent.com/JCoreMS/DeployMSIXVM/main/Scripts/ConvertMSIX2VHD.ps1" -OutFile "C:\MSIX\Scripts\ConvertMSIX2VHD.ps1"
 If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
 Else{"-----ERROR-----`n$Error" | Out-File $Log -Append; $Error.Clear()}
-
-
 
 "Enabling PSRemoting" | Out-file $Log -Append
 Enable-PSRemoting -Force
