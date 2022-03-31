@@ -32,7 +32,7 @@ $Password = ConvertTo-SecureString -String $VMUserPassword -AsPlainText -Force
 
 $Username | Out-File $Log -Append
 
-Enable-PSRemoting -Force
+# Enable-PSRemoting -Force
 
 Invoke-Command -ComputerName $ENV:COMPUTERNAME -Credential $Credential -ScriptBlock {
     $Error.Clear()
