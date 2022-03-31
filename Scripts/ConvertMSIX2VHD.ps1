@@ -38,7 +38,8 @@ write-host "-------> VHDxFiles Subfolder already exists, continuing..." -Foregro
 write-host "-------> Stoping HW Shell Service temporarily. This will suppress format prompts as VHDs are mounted."  -ForegroundColor Green
 
 # This prevents the format drive popup after each VHD is mounted, restarted at end of run
-Stop-Service -Name ShellHWDetection  
+# Commented due to being disabled in image
+# Stop-Service -Name ShellHWDetection  
 
 Foreach($file in $Packages){
     Write-Host "-------> Working on:" $file.Name -ForegroundColor Green
@@ -58,12 +59,12 @@ Foreach($file in $Packages){
     ## $destination = $partition.driveletter + ":\" + $FileName
 
     #Extract package
-    & ".\msixmgr\x64\msixmgr.exe" -Unpack -packagePath $pkgpath -destination $MSIXPath -applyacls
+    & "C:\MSIX\msixmgr\x64\msixmgr.exe" -Unpack -packagePath $pkgpath -destination $MSIXPath -applyacls
 
     #Disconnect VHD
     Dismount-VHD -Path $VHDFile
 }
 
 write-host "-------> Starting HW Shell Service back up."  -ForegroundColor Green
-Start-Service -Name ShellHWDetection
+# Start-Service -Name ShellHWDetection
 Write-Host "Completed! Files are located in $VHDxFolder" -ForegroundColor Green

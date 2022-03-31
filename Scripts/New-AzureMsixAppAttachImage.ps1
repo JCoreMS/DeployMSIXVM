@@ -32,10 +32,26 @@ $Password = ConvertTo-SecureString -String $VMUserPassword -AsPlainText -Force
 
 $Username | Out-File $Log -Append
 
-Enable-PSRemoting -Force
+Enable-PSRemoting -Force    `
 
 Invoke-Command -ComputerName $ENV:COMPUTERNAME -Credential $Credential -ScriptBlock {
     $Error.Clear()
+
+    #Install NuGet and Hyper-V tools
+    "Installing NuGet Provider needed for Hyper-V module" | Out-File $Log -Append
+    Install-PackageProvider -Name NuGet -Force
+    If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
+    Else{"-----ERROR-----`n$Error" | Out-File $Log -Append; $Error.Clear()}
+
+    "Installing Hyper-V Windows Component needed to convert MSIX to VHD" | Out-File $Log -Append
+    Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRestart
+    If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
+    Else{"-----ERROR-----`n$Error" | Out-File $Log -Append; $Error.Clear()}
+
+    "Installing Azure PowerShell Cmdlets" | Out-File $Log -Append
+    Install-Module -Name Azure -Force -Confirm $False
+    If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
+    Else{"-----ERROR-----`n$Error" | Out-File $Log -Append; $Error.Clear()}
 
     #Make Local MSIX Dir for tools
     "Creating Directories" | Out-File $Log -Append
