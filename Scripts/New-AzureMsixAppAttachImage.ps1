@@ -36,7 +36,7 @@ $Username | Out-File $Log -Append
 
 Invoke-Command -ComputerName $ENV:COMPUTERNAME -Credential $Credential -ScriptBlock {
     $Error.Clear()
-
+    $Log = "C:\PostConfig.log"
     #Install NuGet and Hyper-V tools
     "Installing NuGet Provider needed for Hyper-V module" | Out-File $Log -Append
     Install-PackageProvider -Name NuGet -Force
