@@ -86,12 +86,7 @@ Invoke-WebRequest -URI "https://raw.githubusercontent.com/JCoreMS/DeployMSIXVM/m
 If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
 Else{"-----ERROR-----`n$Error" | Out-File $Log -Append; $Error.Clear()}
 
-# Stops the Shell HW Detection service to prevent the format disk popup
-"Stoping Plug and Play Service and setting to disabled" | Out-file $Log -Append
-Stop-Service -Name ShellHWDetection -Force
-set-service -Name ShellHWDetection -StartupType Disabled
-If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
-Else{"-----ERROR-----`n$Error" | Out-File $Log -Append; $Error.Clear()}
+
 
 "Enabling PSRemoting" | Out-file $Log -Append
 Enable-PSRemoting -Force
@@ -125,4 +120,11 @@ Invoke-Command -ComputerName $ENV:COMPUTERNAME -Credential $Credential -ScriptBl
     
 }
 Disable-PSRemoting -Force
+# Stops the Shell HW Detection service to prevent the format disk popup
+"Stoping Plug and Play Service and setting to disabled" | Out-file $Log -Append
+Stop-Service -Name ShellHWDetection -Force
+set-service -Name ShellHWDetection -StartupType Disabled
+If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
+Else{"-----ERROR-----`n$Error" | Out-File $Log -Append; $Error.Clear()}
+
 "-------------------------- END SCRIPT RUN ------------------------" | Out-File $Log -Append
