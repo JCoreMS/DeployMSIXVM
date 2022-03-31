@@ -94,27 +94,26 @@ If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
 Else{"-----ERROR-----`n$Error" | Out-File $Log -Append; $Error.Clear()}
 
 Invoke-Command -ComputerName $ENV:COMPUTERNAME -Credential $Credential -ScriptBlock {
-    $Log = "C:\PostConfig.log"
     # Downloads and installs the MSIX Packaging Tool
-    "Downloading and installing MSIX Packaging Tool" | Out-File $Log -Append
+    "Downloading and installing MSIX Packaging Tool" | Out-File $Using:Log -Append
     Invoke-WebRequest -Uri "https://download.microsoft.com/download/d/9/7/d9707be8-06db-4b13-a992-48666aad8b78/91b9474c34904fe39de2b66827a93267.msixbundle" -OutFile "C:\MSIX\MsixPackagingTool.msixbundle"
     Add-AppPackage -Path "C:\MSIX\MsixPackagingTool.msixbundle"
-    If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
-    Else{"-----ERROR-----`n$Error" | Out-File $Log -Append; $Error.Clear()}
+    If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Using:Log -Append}
+    Else{"-----ERROR-----`n$Error" | Out-File $Using:Log -Append; $Error.Clear()}
 
     # Downloads and installs the PFSTooling Tool
-    "Downloading and installing PSFTooling Tool" | Out-File $Log -Append
+    "Downloading and installing PSFTooling Tool" | Out-File $Using:Log -Append
     Invoke-WebRequest -URI "https://www.tmurgent.com/APPV/Tools/PsfTooling/PsfTooling-x64-5.0.0.0.msix" -OutFile "C:\MSIX\PsfTooling-x64-5.0.0.0.msix"
     Add-AppPackage -Path "C:\MSIX\PsfTooling-x64-5.0.0.0.msix"
-    If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
-    Else{"-----ERROR-----`n$Error" | Out-File $Log -Append; $Error.Clear()}
+    If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Using:Log -Append}
+    Else{"-----ERROR-----`n$Error" | Out-File $Using:Log -Append; $Error.Clear()}
 
     # Map Drive for MSIX Share
-    "Mapping MSIX Share to M:" | Out-File $Log -Append
+    "Mapping MSIX Share to M:" | Out-File $Using:Log -Append
     cmd.exe /C "cmdkey /add:`"$Using:StorageAccountName.file.core.windows.net`" /user:`"localhost\$Using:StorageAccountName`" /pass:`"$Using:StorageAccountKey`""
     New-PSDrive -Name M -PSProvider FileSystem -Root "\\$Using:StorageAccountName.file.core.windows.net\$Using:FileShareName" -Persist
-    If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
-    Else{"-----ERROR-----`n$Error" | Out-File $Log -Append; $Error.Clear()}
+    If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Using:Log -Append}
+    Else{"-----ERROR-----`n$Error" | Out-File $Using:Log -Append; $Error.Clear()}
 
    
     
