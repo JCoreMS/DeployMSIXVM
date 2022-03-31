@@ -93,7 +93,7 @@ set-service -Name ShellHWDetection -StartupType Disabled
 If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
 Else{"-----ERROR-----`n$Error" | Out-File $Log -Append; $Error.Clear()}
 
-"Enabling PSRemoting" | Out-tile $Log -Append
+"Enabling PSRemoting" | Out-file $Log -Append
 Enable-PSRemoting -Force
 If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
 Else{"-----ERROR-----`n$Error" | Out-File $Log -Append; $Error.Clear()}
