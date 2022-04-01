@@ -77,22 +77,32 @@ Set-NetConnectionProfile -InterfaceAlias Ethernet -NetworkCategory Private
 If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
 Else{"-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear()}
 
+# Download the MSIX Packaging Tool
+"Downloading MSIX Packaging Tool" | Out-File $Log -Append
+Invoke-WebRequest -Uri "https://download.microsoft.com/download/d/9/7/d9707be8-06db-4b13-a992-48666aad8b78/91b9474c34904fe39de2b66827a93267.msixbundle" -OutFile "C:\MSIX\MsixPackagingTool.msixbundle"
+If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
+Else{"-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear()}
+
+# Download the PFSTooling Tool
+"Downloading PSFTooling Tool" | Out-File $Log -Append
+Invoke-WebRequest -URI "https://www.tmurgent.com/APPV/Tools/PsfTooling/PsfTooling-x64-5.0.0.0.msix" -OutFile "C:\MSIX\PsfTooling-x64-5.0.0.0.msix"
+If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
+Else{"-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear()}
+
 "Enabling PSRemoting" | Out-file $Log -Append
 Enable-PSRemoting -Force
 If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
 Else{"-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear()}
 
 Invoke-Command -ComputerName $ENV:COMPUTERNAME -Credential $Credential -ScriptBlock {
-    # Downloads and installs the MSIX Packaging Tool
-    "Downloading and installing MSIX Packaging Tool" | Out-File $Using:Log -Append
-    Invoke-WebRequest -Uri "https://download.microsoft.com/download/d/9/7/d9707be8-06db-4b13-a992-48666aad8b78/91b9474c34904fe39de2b66827a93267.msixbundle" -OutFile "C:\MSIX\MsixPackagingTool.msixbundle"
+    # Installs the MSIX Packaging Tool
+    "Installing MSIX Packaging Tool as $Using:VMUserName" | Out-File $Using:Log -Append
     Add-AppPackage -Path "C:\MSIX\MsixPackagingTool.msixbundle"
     If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Using:Log -Append}
     Else{"-----ERROR-----> $Error" | Out-File $Using:Log -Append; $Error.Clear()}
 
     # Downloads and installs the PFSTooling Tool
-    "Downloading and installing PSFTooling Tool" | Out-File $Using:Log -Append
-    Invoke-WebRequest -URI "https://www.tmurgent.com/APPV/Tools/PsfTooling/PsfTooling-x64-5.0.0.0.msix" -OutFile "C:\MSIX\PsfTooling-x64-5.0.0.0.msix"
+    "Installing PSFTooling Tool as $Using:VMUserName" | Out-File $Using:Log -Append
     Add-AppPackage -Path "C:\MSIX\PsfTooling-x64-5.0.0.0.msix"
     If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Using:Log -Append}
     Else{"-----ERROR-----> $Error" | Out-File $Using:Log -Append; $Error.Clear()}
