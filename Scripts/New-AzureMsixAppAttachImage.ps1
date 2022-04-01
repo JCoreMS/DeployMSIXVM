@@ -112,14 +112,13 @@ Else{"-----ERROR-----`n$Error" | Out-File $Log -Append; $Error.Clear()}
 # Turn off auto updates
 "Turn Off Auto Updates via Registry and Disable Scheduled Tasks" | Out-File $Log -Append
 reg add HKLM\Software\Policies\Microsoft\WindowsStore /v AutoDownload /t REG_DWORD /d 0 /f
-Schtasks /Change /Tn "\Microsoft\Windows\WindowsUpdate\Automatic app update" /Disable
 Schtasks /Change /Tn "\Microsoft\Windows\WindowsUpdate\Scheduled Start" /Disable
 If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
 Else{"-----ERROR-----`n$Error" | Out-File $Log -Append; $Error.Clear()}
 
 # Disable Content Delivery auto download apps that they want to promote to users:
 "Disable Content Delivery auto download apps" | Out-File $Log -Append
-reg add HKCU\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager /v PreInstalledAppsEnabled /t REG_DWORD /d 0 /f
+reg add HKEY_USERS\.DEFAULT\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager /v PreInstalledAppsEnabled /t REG_DWORD /d 0 /f
 reg add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager\Debug /v ContentDeliveryAllowedOverride /t REG_DWORD /d 0x2 /f
 If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
 Else{"-----ERROR-----`n$Error" | Out-File $Log -Append; $Error.Clear()}
