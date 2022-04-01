@@ -135,4 +135,6 @@ Set-NetConnectionProfile -InterfaceAlias Ethernet -NetworkCategory Public
 If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
 Else{"-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear()}
 
+Restart-Computer -Force -Wait 0
+
 "-------------------------- END SCRIPT RUN ------------------------" | Out-File $Log -Append
