@@ -99,8 +99,9 @@ Invoke-Command -ComputerName $ENV:COMPUTERNAME -Credential $Credential -ScriptBl
 
     # Map Drive for MSIX Share
     "Mapping MSIX Share to M:" | Out-File $Using:Log -Append
-    cmd.exe /C "cmdkey /add:`"$Using:StorageAccountName.file.core.windows.net`" /user:`"localhost\$Using:StorageAccountName`" /pass:`"$Using:StorageAccountKey`"" | Out-File $Using:Log -Append
-    New-PSDrive -Name M -PSProvider FileSystem -Root "\\$Using:StorageAccountName.file.core.windows.net\$Using:FileShareName" -Persist | Out-File $Using:Log -Append
+    # cmd.exe /C "cmdkey /add:`"$Using:StorageAccountName.file.core.windows.net`" /user:`"localhost\$Using:StorageAccountName`" /pass:`"$Using:StorageAccountKey`"" | Out-File $Using:Log -Append
+    # New-PSDrive -Name M -PSProvider FileSystem -Root "\\$Using:StorageAccountName.file.core.windows.net\$Using:FileShareName" -Persist | Out-File $Using:Log -Append
+    cmd.exe /C "net use M \\$Using:StorageAccountName.file.core.windows.net /user:AZURE\$Using:StorageAccountName /pass:$Using:StorageAccountKey" | Out-File $Using:Log
     If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Using:Log -Append}
     Else{"-----ERROR-----> $Error" | Out-File $Using:Log -Append; $Error.Clear()}
 
