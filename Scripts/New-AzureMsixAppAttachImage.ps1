@@ -71,6 +71,12 @@ Invoke-WebRequest -URI "https://raw.githubusercontent.com/JCoreMS/DeployMSIXVM/m
 If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
 Else{"-----ERROR-----`n$Error" | Out-File $Log -Append; $Error.Clear()}
 
+# Configure NIC to Private (Dependency for PSRemoting)
+"Set Network Adapter to Private Profile (req'd for PSRemoting)" | Out-file $Log -Append
+Set-NetConnectionProfile -InterfaceAlias Ethernet -NetworkCategory Private
+If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
+Else{"-----ERROR-----`n$Error" | Out-File $Log -Append; $Error.Clear()}
+
 "Enabling PSRemoting" | Out-file $Log -Append
 Enable-PSRemoting -Force
 If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
@@ -120,6 +126,11 @@ Else{"-----ERROR-----`n$Error" | Out-File $Log -Append; $Error.Clear()}
 "Disable Content Delivery auto download apps" | Out-File $Log -Append
 reg add HKEY_USERS\.DEFAULT\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager /v PreInstalledAppsEnabled /t REG_DWORD /d 0 /f
 reg add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager\Debug /v ContentDeliveryAllowedOverride /t REG_DWORD /d 0x2 /f
+If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
+Else{"-----ERROR-----`n$Error" | Out-File $Log -Append; $Error.Clear()}
+
+"Set Network Adapter back to Prublic Profile" | Out-file $Log -Append
+Set-NetConnectionProfile -InterfaceAlias Ethernet -NetworkCategory Public
 If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
 Else{"-----ERROR-----`n$Error" | Out-File $Log -Append; $Error.Clear()}
 
