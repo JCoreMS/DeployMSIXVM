@@ -163,6 +163,7 @@
                             "vaultCertificates": [
                                 {
                                     "certificateUrl": "[parameters('KeyVaultSecretUrl')]",
+                                    // Consider Boolean value for Self Signed or Public (Trusted Publishers)
                                     "certificateStore": "TrustedPeople"
                                 }
                             ]
