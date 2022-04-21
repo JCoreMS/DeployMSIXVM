@@ -162,7 +162,7 @@
                     "secrets": [
                         {
                             "sourceVault": {
-                                "id": "[variables('KeyVaultResourceId')]"
+                                "id": "[variables('KeyVaultResourceID')]"
                             },
                             "vaultCertificates": [
                                 {
