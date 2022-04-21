@@ -1,6 +1,6 @@
 # Deploy Azure VM with MSIX App Attach Tools
 
-**Pre-requisites:**
+## Pre-requisites
 
 - Azure Tenant and Subscription
 - Resource Group
