@@ -5,7 +5,9 @@ Pre-requisites:
 - Azure Tenant and Subscription
 - Resource Group
 - VNet and Subnet
-- Keyvault for storing credentials (Resource ID and URL)
+- Keyvault for storing credentials (Resource ID)
+- Keyvault Secret for VM Local Admin password (URL for 'Secret Identifier')
+- Appropriate Permissions on Keyvault and Resource Group to create the VM and read the Keyvault
 
 ## Deploy via Portal
 
