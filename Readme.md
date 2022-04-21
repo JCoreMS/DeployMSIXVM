@@ -16,5 +16,5 @@ Pre-requisites:
 
 You will need the appropriate PowerShell modules installed and connected to Azure.  Then you can run the following from PowerShell:  
 ```PowerShell
-New-AzResourceGroupDeployment -ResourceGroupName <resource-group-name> -TemplateFile <path-to-template>
+New-AzResourceGroupDeployment -ResourceGroupName <resource-group-name> -TemplateFile https://raw.githubusercontent.com/JCoreMS/DeployMSIXVM/main/DeployMSIX_VM.json
 ```
