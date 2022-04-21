@@ -26,10 +26,10 @@
             "type": "string",
             "defaultValue": "latest"
         },
-        "KeyVaultResourceId": {
+        "KeyVaultName": {
             "type": "string",
             "metadata": {
-                "description": "The resource ID for the Key Vault containing the code signing certificate."
+                "description": "The name of the Key Vault to use for credentials."
             }
         },
         "KeyVaultSecretUrl": {
@@ -82,12 +82,16 @@
         },
         "VmSize": {
             "type": "string",
-            "defaultValue": "Standard_D2s_v3"
+            "defaultValue": "Standard_D2s_v5"
         },
         "VmUsername": {
             "defaultValue": "jcore",
             "type": "string"
         }
+    },
+    "variables": {
+        "KeyVaultResourceID": "[concat('/subscriptions/', parameters(subscription().id), '/resourceGroups/', parameters(resourceGroup().name), '/providers/Microsoft.KeyVault/vaults/', parameters('KeyVaultName'))]"
+      //  "KeyVaultSecretURL": "[concat('https://', parameters('KeyVaultName'), '.vault.azure.net/secrets/', parameters('VmName'), '/', )]"
     },
     "resources": [
         {
@@ -158,7 +162,7 @@
                     "secrets": [
                         {
                             "sourceVault": {
-                                "id": "[parameters('KeyVaultResourceId')]"
+                                "id": "[variables('KeyVaultResourceId')]"
                             },
                             "vaultCertificates": [
                                 {
