@@ -144,8 +144,6 @@ param VNetName string = 'vnet-eastus2-External'
 
 param SubnetName string = 'sub-eus2-extv-wkstns'
 
-param KeyVaultName string = 'kv-eastus2-AVDLab'
-
 param StorageAcctName string = 'storeus2avdmsix'
 
 @secure()

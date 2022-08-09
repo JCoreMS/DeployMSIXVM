@@ -196,10 +196,6 @@
       "type": "string",
       "defaultValue": "sub-eus2-extv-wkstns"
     },
-    "KeyVaultName": {
-      "type": "string",
-      "defaultValue": "kv-eastus2-AVDLab"
-    },
     "StorageAcctName": {
       "type": "string",
       "defaultValue": "storeus2avdmsix"
