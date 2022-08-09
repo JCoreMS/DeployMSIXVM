@@ -151,7 +151,7 @@ param StorageAcctKey string
 
 param FileshareName string = 'msix'
 
-resource pip 'Microsoft.Network/publicIPAddresses@2021-02-01' = {
+resource pip 'Microsoft.Network/publicIPAddresses@2022-01-01' = {
   name: publicIpName
   location: location
   sku: {
@@ -165,7 +165,7 @@ resource pip 'Microsoft.Network/publicIPAddresses@2021-02-01' = {
   }
 }
 
-resource nic 'Microsoft.Network/networkInterfaces@2021-02-01' = {
+resource nic 'Microsoft.Network/networkInterfaces@2022-01-01' = {
   name: 'nic-AVDMSIXTools'
   location: location
   properties: {
@@ -186,7 +186,7 @@ resource nic 'Microsoft.Network/networkInterfaces@2021-02-01' = {
   }
 }
 
-resource vm 'Microsoft.Compute/virtualMachines@2021-03-01' = {
+resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
   name: vmName
   location: location
   properties: {
