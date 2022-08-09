@@ -26,5 +26,5 @@ This deployment will create a VM from the Microsoft Gallery and configure and in
 
 You will need the appropriate PowerShell modules installed and connected to Azure.  Then you can run the following from PowerShell:  
 ```PowerShell
-New-AzResourceGroupDeployment -ResourceGroupName <resource-group-name> -TemplateFile https://raw.githubusercontent.com/JCoreMS/DeployMSIXVM/main/DeployMSIX_VM.json
+New-AzResourceGroupDeployment -ResourceGroupName <resource-group-name> -TemplateFile https://raw.githubusercontent.com/JCoreMS/DeployMSIXVM/main/solution.bicep
 ```

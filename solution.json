@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.9.1.41621",
-      "templateHash": "10770927335585328734"
+      "templateHash": "4364678200207331827"
     }
   },
   "parameters": {
@@ -280,14 +280,7 @@
             "managedDisk": {
               "storageAccountType": "StandardSSD_LRS"
             }
-          },
-          "dataDisks": [
-            {
-              "diskSizeGB": 1023,
-              "lun": 0,
-              "createOption": "Empty"
-            }
-          ]
+          }
         },
         "networkProfile": {
           "networkInterfaces": [
