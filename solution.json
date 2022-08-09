@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.9.1.41621",
-      "templateHash": "15374827453096950732"
+      "templateHash": "10770927335585328734"
     }
   },
   "parameters": {
@@ -232,7 +232,7 @@
     {
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2022-01-01",
-      "name": "nic-AVDMSIXTools",
+      "name": "nic-MSIXToolsvm",
       "location": "[parameters('location')]",
       "properties": {
         "ipConfigurations": [
@@ -292,7 +292,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', 'nic-AVDMSIXTools')]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', 'nic-MSIXToolsvm')]"
             }
           ]
         },
@@ -303,7 +303,7 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces', 'nic-AVDMSIXTools')]"
+        "[resourceId('Microsoft.Network/networkInterfaces', 'nic-MSIXToolsvm')]"
       ]
     },
     {
@@ -315,7 +315,6 @@
         "publisher": "Microsoft.Compute",
         "type": "CustomScriptExtension",
         "typeHandlerVersion": "1.10",
-        "enableAutomaticUpgrade": true,
         "settings": {
           "fileUris": [
             "https://raw.githubusercontent.com/JCoreMS/DeployMSIXVM/main/Scripts/New-AzureMsixAppAttachImage.ps1"
