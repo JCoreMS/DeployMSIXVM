@@ -10,7 +10,7 @@ param adminPassword string
 param dnsLabelPrefix string = toLower('${vmName}-${uniqueString(resourceGroup().id, vmName)}')
 
 @description('Name for the Public IP used to access the Virtual Machine.')
-param publicIpName string = 'myPublicIP'
+param publicIpName string = 'pip-msixtoolsvm'
 
 @description('Allocation method for the Public IP used to access the Virtual Machine.')
 @allowed([
