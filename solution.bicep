@@ -152,8 +152,7 @@ param StorageAcctKey string
 
 param FileshareName string = 'msix'
 
-
-var Timestamp = dateTimeToEpoch()
+param Timestamp string = utcNow('u')
 
 resource pip 'Microsoft.Network/publicIPAddresses@2022-01-01' = {
   name: publicIpName

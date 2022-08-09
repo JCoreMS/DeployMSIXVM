@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.9.1.41621",
-      "templateHash": "7874742322510521441"
+      "templateHash": "15374827453096950732"
     }
   },
   "parameters": {
@@ -207,6 +207,10 @@
     "FileshareName": {
       "type": "string",
       "defaultValue": "msix"
+    },
+    "Timestamp": {
+      "type": "string",
+      "defaultValue": "[utcNow('u')]"
     }
   },
   "resources": [
@@ -316,7 +320,7 @@
           "fileUris": [
             "https://raw.githubusercontent.com/JCoreMS/DeployMSIXVM/main/Scripts/New-AzureMsixAppAttachImage.ps1"
           ],
-          "timestamp": "[dateTimeToEpoch()]"
+          "timestamp": "[parameters('Timestamp')]"
         },
         "protectedSettings": {
           "commandToExecute": "[format('powershell -ExecutionPolicy Unrestricted -File New-AzureMsixAppAttachImage.ps1 -FileShareName {0} -StorageAccountKey {1} -StorageAccountName ${2} -VMUserName {3} -VMUserPassword {4}', parameters('FileshareName'), parameters('StorageAcctKey'), parameters('StorageAcctName'), parameters('adminUsername'), parameters('adminPassword'))]"
