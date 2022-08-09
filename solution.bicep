@@ -138,7 +138,8 @@ param vmSize string = 'Standard_D2s_v5'
 param location string = resourceGroup().location
 
 @description('Name of the virtual machine.')
-param vmName string = 'vmAVD-MSIX-Tools'
+@maxLength(15)
+param vmName string = 'vmMSIXTools'
 
 param VNetName string = 'vnet-eastus2-External'
 

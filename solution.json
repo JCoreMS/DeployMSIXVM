@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.9.1.41621",
-      "templateHash": "13631235842545082330"
+      "templateHash": "18178455709493553"
     }
   },
   "parameters": {
@@ -183,7 +183,8 @@
     },
     "vmName": {
       "type": "string",
-      "defaultValue": "vmAVD-MSIX-Tools",
+      "defaultValue": "vmMSIXTools",
+      "maxLength": 15,
       "metadata": {
         "description": "Name of the virtual machine."
       }
@@ -211,7 +212,7 @@
   "resources": [
     {
       "type": "Microsoft.Network/publicIPAddresses",
-      "apiVersion": "2021-02-01",
+      "apiVersion": "2022-01-01",
       "name": "[parameters('publicIpName')]",
       "location": "[parameters('location')]",
       "sku": {
@@ -226,7 +227,7 @@
     },
     {
       "type": "Microsoft.Network/networkInterfaces",
-      "apiVersion": "2021-02-01",
+      "apiVersion": "2022-01-01",
       "name": "nic-AVDMSIXTools",
       "location": "[parameters('location')]",
       "properties": {
@@ -251,7 +252,7 @@
     },
     {
       "type": "Microsoft.Compute/virtualMachines",
-      "apiVersion": "2021-03-01",
+      "apiVersion": "2022-03-01",
       "name": "[parameters('vmName')]",
       "location": "[parameters('location')]",
       "properties": {
@@ -265,8 +266,8 @@
         },
         "storageProfile": {
           "imageReference": {
-            "publisher": "MicrosoftWindowsServer",
-            "offer": "WindowsServer",
+            "publisher": "MicrosoftWindowsDesktop",
+            "offer": "Windows-10",
             "sku": "[parameters('OSVersion')]",
             "version": "latest"
           },
