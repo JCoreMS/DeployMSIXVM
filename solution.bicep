@@ -201,7 +201,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
     storageProfile: {
       imageReference: {
         publisher: 'MicrosoftWindowsDesktop'
-        offer: 'WindowsServer'
+        offer: 'Windows-10'
         sku: OSVersion
         version: 'latest'
       }
