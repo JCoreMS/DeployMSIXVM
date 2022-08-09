@@ -152,6 +152,9 @@ param StorageAcctKey string
 
 param FileshareName string = 'msix'
 
+
+var Timestamp = dateTimeToEpoch()
+
 resource pip 'Microsoft.Network/publicIPAddresses@2022-01-01' = {
   name: publicIpName
   location: location
@@ -246,7 +249,7 @@ resource configVm 'Microsoft.Compute/virtualMachines/extensions@2022-03-01' = {
     enableAutomaticUpgrade: true
     settings: {
       fileUris: [ 'https://raw.githubusercontent.com/JCoreMS/DeployMSIXVM/main/Scripts/New-AzureMsixAppAttachImage.ps1' ]
-      timestamp: dateTimeToEpoch()
+      timestamp: Timestamp
     }
     protectedSettings: {
       commandToExecute: 'powershell -ExecutionPolicy Unrestricted -File New-AzureMsixAppAttachImage.ps1 -FileShareName ${FileshareName} -StorageAccountKey ${StorageAcctKey} -StorageAccountName $${StorageAcctName} -VMUserName ${adminUsername} -VMUserPassword ${adminPassword}'

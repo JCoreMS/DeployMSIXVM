@@ -1,5 +1,4 @@
 # Prerequisites
-# Ensure your code signing certificate is available in an Azure Key Vault
 # Stage the application and its associated conversion XML file in an Azure Storage Account Container
 # Established an SMB share for the MSIX App Attach images
 
