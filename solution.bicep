@@ -169,7 +169,7 @@ resource pip 'Microsoft.Network/publicIPAddresses@2022-01-01' = {
 }
 
 resource nic 'Microsoft.Network/networkInterfaces@2022-01-01' = {
-  name: 'nic-AVDMSIXTools'
+  name: 'nic-MSIXToolsvm'
   location: location
   properties: {
     ipConfigurations: [
@@ -245,7 +245,6 @@ resource configVm 'Microsoft.Compute/virtualMachines/extensions@2022-03-01' = {
     publisher: 'Microsoft.Compute'
     type: 'CustomScriptExtension'
     typeHandlerVersion: '1.10'
-    enableAutomaticUpgrade: true
     settings: {
       fileUris: [ 'https://raw.githubusercontent.com/JCoreMS/DeployMSIXVM/main/Scripts/New-AzureMsixAppAttachImage.ps1' ]
       timestamp: Timestamp
