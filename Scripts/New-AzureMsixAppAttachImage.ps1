@@ -147,6 +147,20 @@ Set-NetConnectionProfile -InterfaceAlias Ethernet -NetworkCategory Public
 If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
 Else{"-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear()}
 
-Restart-Computer -Force -Wait 0
+# Create and install Self-Signed Code Signing Certificate
+"Creating Self Signed Code Signing Certificate" | Out-File $Log -Append
+$Cert = New-SelfSignedCertificate -FriendlyName "MSIX App Attach Test CodeSigning" -CertStoreLocation Cert:\LocalMachine\My -Subject "MSIXAppAttachTest" -Type CodeSigningCert
+If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
+Else{"-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear()}
+
+"Moving Cert from Personal to Trusted People Store on Local Machine"
+$Cert | Move-Item -Destination cert:\LocalMachine\TrustedPeople | Out-File $Log -Append
+If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
+Else{"-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear()}
 
 "-------------------------- END SCRIPT RUN ------------------------" | Out-File $Log -Append
+
+"Rebooting VM...." | Out-File $Log -Append
+Restart-Computer -Force -Wait 0
+If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
+Else{"-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear()}
