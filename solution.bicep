@@ -145,6 +145,9 @@ param StorageAcctKey string
 param FileshareName string = 'msix'
 
 @description('Do not change. Used for deployment purposes only.')
+
+var StorageSuffix = environment().suffixes.storage
+
 param Timestamp string = utcNow('u')
 
 resource pip 'Microsoft.Network/publicIPAddresses@2022-01-01' = {
@@ -233,7 +236,7 @@ resource configVm 'Microsoft.Compute/virtualMachines/extensions@2022-03-01' = {
       timestamp: Timestamp
     }
     protectedSettings: {
-      commandToExecute: 'powershell -ExecutionPolicy Unrestricted -File New-AzureMsixAppAttachImage.ps1 -FileShareName ${FileshareName} -StorageAccountKey ${StorageAcctKey} -StorageAccountName $${StorageAcctName} -VMUserName ${adminUsername} -VMUserPassword ${adminPassword}'
+      commandToExecute: 'powershell -ExecutionPolicy Unrestricted -File New-AzureMsixAppAttachImage.ps1 -FileShareName ${FileshareName} -StorageAccountKey ${StorageAcctKey} -StorageAccountName $${StorageAcctName} -VMUserName ${adminUsername} -VMUserPassword ${adminPassword} -StorageSuffix ${StorageSuffix}'
     }
   }
 }

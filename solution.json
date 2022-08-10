@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.9.1.41621",
-      "templateHash": "7343694879189538195"
+      "templateHash": "2633056563238350317"
     }
   },
   "parameters": {
@@ -200,11 +200,11 @@
     },
     "Timestamp": {
       "type": "string",
-      "defaultValue": "[utcNow('u')]",
-      "metadata": {
-        "description": "Do not change. Used for deployment purposes only."
-      }
+      "defaultValue": "[utcNow('u')]"
     }
+  },
+  "variables": {
+    "StorageSuffix": "[environment().suffixes.storage]"
   },
   "resources": [
     {
@@ -305,7 +305,7 @@
           "timestamp": "[parameters('Timestamp')]"
         },
         "protectedSettings": {
-          "commandToExecute": "[format('powershell -ExecutionPolicy Unrestricted -File New-AzureMsixAppAttachImage.ps1 -FileShareName {0} -StorageAccountKey {1} -StorageAccountName ${2} -VMUserName {3} -VMUserPassword {4}', parameters('FileshareName'), parameters('StorageAcctKey'), parameters('StorageAcctName'), parameters('adminUsername'), parameters('adminPassword'))]"
+          "commandToExecute": "[format('powershell -ExecutionPolicy Unrestricted -File New-AzureMsixAppAttachImage.ps1 -FileShareName {0} -StorageAccountKey {1} -StorageAccountName ${2} -VMUserName {3} -VMUserPassword {4} -StorageSuffix {5}', parameters('FileshareName'), parameters('StorageAcctKey'), parameters('StorageAcctName'), parameters('adminUsername'), parameters('adminPassword'), variables('StorageSuffix'))]"
         }
       },
       "dependsOn": [
