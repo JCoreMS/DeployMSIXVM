@@ -6,25 +6,12 @@ param adminUsername string
 @secure()
 param adminPassword string
 
-@description('Unique DNS Name for the Public IP used to access the Virtual Machine.')
-param dnsLabelPrefix string = toLower('${vmName}-${uniqueString(resourceGroup().id, vmName)}')
-
-@description('Name for the Public IP used to access the Virtual Machine.')
-param publicIpName string = 'pip-msixtoolsvm'
-
 @description('Allocation method for the Public IP used to access the Virtual Machine.')
 @allowed([
   'Dynamic'
   'Static'
 ])
 param publicIPAllocationMethod string = 'Dynamic'
-
-@description('SKU for the Public IP used to access the Virtual Machine.')
-@allowed([
-  'Basic'
-  'Standard'
-])
-param publicIpSku string = 'Basic'
 
 @description('The Windows version for the VM. This will pick a fully patched image of this given Windows version.')
 @allowed([
@@ -155,16 +142,13 @@ param FileshareName string = 'msix'
 param Timestamp string = utcNow('u')
 
 resource pip 'Microsoft.Network/publicIPAddresses@2022-01-01' = {
-  name: publicIpName
+  name: 'pip-MSIXToolsVM'
   location: location
   sku: {
-    name: publicIpSku
+    name: 'Standard'
   }
   properties: {
     publicIPAllocationMethod: publicIPAllocationMethod
-    dnsSettings: {
-      domainNameLabel: dnsLabelPrefix
-    }
   }
 }
 

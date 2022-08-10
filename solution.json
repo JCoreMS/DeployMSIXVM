@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.9.1.41621",
-      "templateHash": "4364678200207331827"
+      "templateHash": "11909818435909838578"
     }
   },
   "parameters": {
@@ -22,20 +22,6 @@
         "description": "Password for the Virtual Machine."
       }
     },
-    "dnsLabelPrefix": {
-      "type": "string",
-      "defaultValue": "[toLower(format('{0}-{1}', parameters('vmName'), uniqueString(resourceGroup().id, parameters('vmName'))))]",
-      "metadata": {
-        "description": "Unique DNS Name for the Public IP used to access the Virtual Machine."
-      }
-    },
-    "publicIpName": {
-      "type": "string",
-      "defaultValue": "pip-msixtoolsvm",
-      "metadata": {
-        "description": "Name for the Public IP used to access the Virtual Machine."
-      }
-    },
     "publicIPAllocationMethod": {
       "type": "string",
       "defaultValue": "Dynamic",
@@ -45,17 +31,6 @@
       ],
       "metadata": {
         "description": "Allocation method for the Public IP used to access the Virtual Machine."
-      }
-    },
-    "publicIpSku": {
-      "type": "string",
-      "defaultValue": "Basic",
-      "allowedValues": [
-        "Basic",
-        "Standard"
-      ],
-      "metadata": {
-        "description": "SKU for the Public IP used to access the Virtual Machine."
       }
     },
     "OSVersion": {
@@ -217,16 +192,13 @@
     {
       "type": "Microsoft.Network/publicIPAddresses",
       "apiVersion": "2022-01-01",
-      "name": "[parameters('publicIpName')]",
+      "name": "pip-MSIXToolsVM",
       "location": "[parameters('location')]",
       "sku": {
-        "name": "[parameters('publicIpSku')]"
+        "name": "Standard"
       },
       "properties": {
-        "publicIPAllocationMethod": "[parameters('publicIPAllocationMethod')]",
-        "dnsSettings": {
-          "domainNameLabel": "[parameters('dnsLabelPrefix')]"
-        }
+        "publicIPAllocationMethod": "[parameters('publicIPAllocationMethod')]"
       }
     },
     {
@@ -241,7 +213,7 @@
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIpName'))]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'pip-MSIXToolsVM')]"
               },
               "subnet": {
                 "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('VNetName'), parameters('SubnetName'))]"
@@ -251,7 +223,7 @@
         ]
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIpName'))]"
+        "[resourceId('Microsoft.Network/publicIPAddresses', 'pip-MSIXToolsVM')]"
       ]
     },
     {
