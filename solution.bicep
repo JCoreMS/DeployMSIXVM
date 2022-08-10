@@ -124,21 +124,27 @@ param vmSize string = 'Standard_D2s_v5'
 @description('Location for all resources.')
 param location string = resourceGroup().location
 
-@description('Name of the virtual machine.')
+@description('Name of the virtual machine. (must be 15 characters or less)')
 @maxLength(15)
 param vmName string = 'vmMSIXTools'
 
+@description('Virtual Network to attach MSIX Tools VM to.')
 param VNetName string = 'vnet-eastus2-External'
 
+@description('Subnet to use for MSIX VM Tools VM.')
 param SubnetName string = 'sub-eus2-extv-wkstns'
 
+@description('Storage Account where MSIX packages where be stored for AVD. (mapped for ease of copying resulting MSIX packages)')
 param StorageAcctName string = 'storeus2avdmsix'
 
 @secure()
+@description('Storage Account Key used for mapping drive to MSIX Storage / share.')
 param StorageAcctKey string
 
+@description('Share name for MSIX package file share.')
 param FileshareName string = 'msix'
 
+@description('Do not change. Used for deployment purposes only.')
 param Timestamp string = utcNow('u')
 
 resource pip 'Microsoft.Network/publicIPAddresses@2022-01-01' = {

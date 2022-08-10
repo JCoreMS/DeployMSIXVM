@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.9.1.41621",
-      "templateHash": "17029436993764376112"
+      "templateHash": "7343694879189538195"
     }
   },
   "parameters": {
@@ -161,31 +161,49 @@
       "defaultValue": "vmMSIXTools",
       "maxLength": 15,
       "metadata": {
-        "description": "Name of the virtual machine."
+        "description": "Name of the virtual machine. (must be 15 characters or less)"
       }
     },
     "VNetName": {
       "type": "string",
-      "defaultValue": "vnet-eastus2-External"
+      "defaultValue": "vnet-eastus2-External",
+      "metadata": {
+        "description": "Virtual Network to attach MSIX Tools VM to."
+      }
     },
     "SubnetName": {
       "type": "string",
-      "defaultValue": "sub-eus2-extv-wkstns"
+      "defaultValue": "sub-eus2-extv-wkstns",
+      "metadata": {
+        "description": "Subnet to use for MSIX VM Tools VM."
+      }
     },
     "StorageAcctName": {
       "type": "string",
-      "defaultValue": "storeus2avdmsix"
+      "defaultValue": "storeus2avdmsix",
+      "metadata": {
+        "description": "Storage Account where MSIX packages where be stored for AVD. (mapped for ease of copying resulting MSIX packages)"
+      }
     },
     "StorageAcctKey": {
-      "type": "secureString"
+      "type": "secureString",
+      "metadata": {
+        "description": "Storage Account Key used for mapping drive to MSIX Storage / share."
+      }
     },
     "FileshareName": {
       "type": "string",
-      "defaultValue": "msix"
+      "defaultValue": "msix",
+      "metadata": {
+        "description": "Share name for MSIX package file share."
+      }
     },
     "Timestamp": {
       "type": "string",
-      "defaultValue": "[utcNow('u')]"
+      "defaultValue": "[utcNow('u')]",
+      "metadata": {
+        "description": "Do not change. Used for deployment purposes only."
+      }
     }
   },
   "resources": [
