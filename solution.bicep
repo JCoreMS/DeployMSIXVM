@@ -145,7 +145,7 @@ resource pip 'Microsoft.Network/publicIPAddresses@2022-01-01' = {
   name: 'pip-MSIXToolsVM'
   location: location
   sku: {
-    name: 'Standard'
+    name: 'Basic'
   }
   properties: {
     publicIPAllocationMethod: publicIPAllocationMethod

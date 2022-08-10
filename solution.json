@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.9.1.41621",
-      "templateHash": "11909818435909838578"
+      "templateHash": "17029436993764376112"
     }
   },
   "parameters": {
@@ -195,7 +195,7 @@
       "name": "pip-MSIXToolsVM",
       "location": "[parameters('location')]",
       "sku": {
-        "name": "Standard"
+        "name": "Basic"
       },
       "properties": {
         "publicIPAllocationMethod": "[parameters('publicIPAllocationMethod')]"
