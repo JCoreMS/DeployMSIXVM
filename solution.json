@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.9.1.41621",
-      "templateHash": "2982948469698126839"
+      "templateHash": "8971315707256879448"
     }
   },
   "parameters": {
@@ -24,7 +24,7 @@
     },
     "publicIPAllowed": {
       "type": "bool",
-      "defaultValue": true,
+      "defaultValue": false,
       "metadata": {
         "description": "Create the VM with a Public IP to access the Virtual Machine?"
       }
@@ -230,9 +230,7 @@
             "name": "ipconfig1",
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
-              "publicIPAddress": {
-                "id": "[if(parameters('publicIPAllowed'), resourceId('Microsoft.Network/publicIPAddresses', 'pip-MSIXToolsVM'), null())]"
-              },
+              "publicIPAddress": "[if(parameters('publicIPAllowed'), createObject('id', resourceId('Microsoft.Network/publicIPAddresses', 'pip-MSIXToolsVM')), null())]",
               "subnet": {
                 "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('VNetName'), parameters('SubnetName'))]"
               }

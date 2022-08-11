@@ -120,9 +120,7 @@ Invoke-Command -ComputerName $ENV:COMPUTERNAME -Credential $Credential -ScriptBl
     
     If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Using:Log -Append}
     Else{"-----ERROR-----> $Error" | Out-File $Using:Log -Append; $Error.Clear()}
-
    
-    
 }
 
 Disable-PSRemoting -Force
