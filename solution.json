@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.9.1.41621",
-      "templateHash": "2633056563238350317"
+      "templateHash": "2982948469698126839"
     }
   },
   "parameters": {
@@ -22,15 +22,11 @@
         "description": "Password for the Virtual Machine."
       }
     },
-    "publicIPAllocationMethod": {
-      "type": "string",
-      "defaultValue": "Dynamic",
-      "allowedValues": [
-        "Dynamic",
-        "Static"
-      ],
+    "publicIPAllowed": {
+      "type": "bool",
+      "defaultValue": true,
       "metadata": {
-        "description": "Allocation method for the Public IP used to access the Virtual Machine."
+        "description": "Create the VM with a Public IP to access the Virtual Machine?"
       }
     },
     "OSVersion": {
@@ -195,12 +191,15 @@
       "type": "string",
       "defaultValue": "msix",
       "metadata": {
-        "description": "Share name for MSIX package file share."
+        "description": "Share name for EXISTING MSIX package file share."
       }
     },
     "Timestamp": {
       "type": "string",
-      "defaultValue": "[utcNow('u')]"
+      "defaultValue": "[utcNow('u')]",
+      "metadata": {
+        "description": "Do not change. Used for deployment purposes only."
+      }
     }
   },
   "variables": {
@@ -208,6 +207,7 @@
   },
   "resources": [
     {
+      "condition": "[parameters('publicIPAllowed')]",
       "type": "Microsoft.Network/publicIPAddresses",
       "apiVersion": "2022-01-01",
       "name": "pip-MSIXToolsVM",
@@ -216,7 +216,7 @@
         "name": "Basic"
       },
       "properties": {
-        "publicIPAllocationMethod": "[parameters('publicIPAllocationMethod')]"
+        "publicIPAllocationMethod": "Dynamic"
       }
     },
     {
@@ -231,7 +231,7 @@
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'pip-MSIXToolsVM')]"
+                "id": "[if(parameters('publicIPAllowed'), resourceId('Microsoft.Network/publicIPAddresses', 'pip-MSIXToolsVM'), null())]"
               },
               "subnet": {
                 "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('VNetName'), parameters('SubnetName'))]"
