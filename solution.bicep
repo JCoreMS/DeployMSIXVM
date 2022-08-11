@@ -6,12 +6,8 @@ param adminUsername string
 @secure()
 param adminPassword string
 
-@description('Allocation method for the Public IP used to access the Virtual Machine.')
-@allowed([
-  'Dynamic'
-  'Static'
-])
-param publicIPAllocationMethod string = 'Dynamic'
+@description('Create the VM with a Public IP to access the Virtual Machine?')
+param publicIPAllowed bool = true
 
 @description('The Windows version for the VM. This will pick a fully patched image of this given Windows version.')
 @allowed([
@@ -141,23 +137,25 @@ param StorageAcctName string = 'storeus2avdmsix'
 @description('Storage Account Key used for mapping drive to MSIX Storage / share.')
 param StorageAcctKey string
 
-@description('Share name for MSIX package file share.')
+@description('Share name for EXISTING MSIX package file share.')
 param FileshareName string = 'msix'
 
 @description('Do not change. Used for deployment purposes only.')
+param Timestamp string = utcNow('u')
+
 
 var StorageSuffix = environment().suffixes.storage
 
-param Timestamp string = utcNow('u')
 
-resource pip 'Microsoft.Network/publicIPAddresses@2022-01-01' = {
+
+resource pip 'Microsoft.Network/publicIPAddresses@2022-01-01' = if(publicIPAllowed) {
   name: 'pip-MSIXToolsVM'
   location: location
   sku: {
     name: 'Basic'
   }
   properties: {
-    publicIPAllocationMethod: publicIPAllocationMethod
+    publicIPAllocationMethod: 'Dynamic'
   }
 }
 
@@ -171,7 +169,7 @@ resource nic 'Microsoft.Network/networkInterfaces@2022-01-01' = {
         properties: {
           privateIPAllocationMethod: 'Dynamic'
           publicIPAddress: {
-            id: pip.id
+            id: (publicIPAllowed) ? pip.id : null
           }
           subnet: {
             id: resourceId('Microsoft.Network/virtualNetworks/subnets', VNetName, SubnetName)
