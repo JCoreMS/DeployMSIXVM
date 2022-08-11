@@ -7,7 +7,7 @@ param adminUsername string
 param adminPassword string
 
 @description('Create the VM with a Public IP to access the Virtual Machine?')
-param publicIPAllowed bool = true
+param publicIPAllowed bool = false
 
 @description('The Windows version for the VM. This will pick a fully patched image of this given Windows version.')
 @allowed([
@@ -168,9 +168,9 @@ resource nic 'Microsoft.Network/networkInterfaces@2022-01-01' = {
         name: 'ipconfig1'
         properties: {
           privateIPAllocationMethod: 'Dynamic'
-          publicIPAddress: {
-            id: (publicIPAllowed) ? pip.id : null
-          }
+          publicIPAddress: publicIPAllowed ? {
+            id: pip.id
+          } : null
           subnet: {
             id: resourceId('Microsoft.Network/virtualNetworks/subnets', VNetName, SubnetName)
           }
