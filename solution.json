@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.9.1.41621",
-      "templateHash": "8971315707256879448"
+      "version": "0.10.13.619",
+      "templateHash": "10313864424114307644"
     }
   },
   "parameters": {
@@ -222,7 +222,7 @@
     {
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2022-01-01",
-      "name": "nic-MSIXToolsvm",
+      "name": "[format('nic-{0}', parameters('vmName'))]",
       "location": "[parameters('location')]",
       "properties": {
         "ipConfigurations": [
@@ -273,7 +273,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', 'nic-MSIXToolsvm')]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('nic-{0}', parameters('vmName')))]"
             }
           ]
         },
@@ -284,7 +284,7 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces', 'nic-MSIXToolsvm')]"
+        "[resourceId('Microsoft.Network/networkInterfaces', format('nic-{0}', parameters('vmName')))]"
       ]
     },
     {

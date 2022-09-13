@@ -160,7 +160,7 @@ resource pip 'Microsoft.Network/publicIPAddresses@2022-01-01' = if(publicIPAllow
 }
 
 resource nic 'Microsoft.Network/networkInterfaces@2022-01-01' = {
-  name: 'nic-MSIXToolsvm'
+  name: 'nic-${vmName}'
   location: location
   properties: {
     ipConfigurations: [
