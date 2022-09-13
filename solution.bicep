@@ -125,20 +125,20 @@ param location string = resourceGroup().location
 param vmName string = 'vmMSIXTools'
 
 @description('Virtual Network to attach MSIX Tools VM to.')
-param VNetName string = 'vnet-eastus2-External'
+param VNetName string
 
 @description('Subnet to use for MSIX VM Tools VM.')
-param SubnetName string = 'sub-eus2-extv-wkstns'
+param SubnetName string
 
 @description('Storage Account where MSIX packages where be stored for AVD. (mapped for ease of copying resulting MSIX packages)')
-param StorageAcctName string = 'storeus2avdmsix'
+param StorageAcctName string
 
 @secure()
 @description('Storage Account Key used for mapping drive to MSIX Storage / share.')
 param StorageAcctKey string
 
 @description('Share name for EXISTING MSIX package file share.')
-param FileshareName string = 'msix'
+param FileshareName string
 
 @description('Do not change. Used for deployment purposes only.')
 param Timestamp string = utcNow('u')
