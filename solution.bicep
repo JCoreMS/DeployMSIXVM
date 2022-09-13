@@ -7,7 +7,7 @@ param adminUsername string
 param adminPassword string
 
 @description('Create the VM with a Public IP to access the Virtual Machine?')
-param publicIPAllowed bool = false
+param publicIPAllowed bool = true
 
 @description('The Windows version for the VM. This will pick a fully patched image of this given Windows version.')
 @allowed([
@@ -146,10 +146,8 @@ param Timestamp string = utcNow('u')
 
 var StorageSuffix = environment().suffixes.storage
 
-
-
 resource pip 'Microsoft.Network/publicIPAddresses@2022-01-01' = if(publicIPAllowed) {
-  name: 'pip-MSIXToolsVM'
+  name: 'pip-${vmName}'
   location: location
   sku: {
     name: 'Basic'
@@ -170,7 +168,7 @@ resource nic 'Microsoft.Network/networkInterfaces@2022-01-01' = {
           privateIPAllocationMethod: 'Dynamic'
           publicIPAddress: publicIPAllowed ? {
             id: pip.id
-          } : {}
+          } : null
           subnet: {
             id: resourceId('Microsoft.Network/virtualNetworks/subnets', VNetName, SubnetName)
           }
