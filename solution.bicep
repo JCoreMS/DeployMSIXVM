@@ -170,7 +170,7 @@ resource nic 'Microsoft.Network/networkInterfaces@2022-01-01' = {
           privateIPAllocationMethod: 'Dynamic'
           publicIPAddress: publicIPAllowed ? {
             id: pip.id
-          } : null
+          } : {}
           subnet: {
             id: resourceId('Microsoft.Network/virtualNetworks/subnets', VNetName, SubnetName)
           }
