@@ -166,9 +166,9 @@ resource nic 'Microsoft.Network/networkInterfaces@2022-01-01' = {
         name: 'ipconfig1'
         properties: {
           privateIPAllocationMethod: 'Dynamic'
-          publicIPAddress: publicIPAllowed ? {
+          publicIPAddress: (publicIPAllowed) ? {
             id: pip.id
-          } : null
+          }: null
           subnet: {
             id: resourceId('Microsoft.Network/virtualNetworks/subnets', VNetName, SubnetName)
           }
