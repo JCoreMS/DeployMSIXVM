@@ -225,7 +225,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
     networkProfile: {
       networkInterfaces: [
         {
-          id: nic.id
+          id: publicIPAllowed ? nicpub.id : nicpvt.id
         }
       ]
     }

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.12.40.16777",
-      "templateHash": "6864845361391936664"
+      "templateHash": "15419159253492977000"
     }
   },
   "parameters": {
@@ -220,6 +220,7 @@
       }
     },
     {
+      "condition": "[parameters('publicIPAllowed')]",
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2022-01-01",
       "name": "[format('nic-{0}', parameters('vmName'))]",
@@ -230,7 +231,9 @@
             "name": "ipconfig1",
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
-              "publicIPAddress": "[if(parameters('publicIPAllowed'), createObject('id', resourceId('Microsoft.Network/publicIPAddresses', format('pip-{0}', parameters('vmName')))), null())]",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', format('pip-{0}', parameters('vmName')))]"
+              },
               "subnet": {
                 "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('VNetName'), parameters('SubnetName'))]"
               }
@@ -241,6 +244,26 @@
       "dependsOn": [
         "[resourceId('Microsoft.Network/publicIPAddresses', format('pip-{0}', parameters('vmName')))]"
       ]
+    },
+    {
+      "condition": "[not(parameters('publicIPAllowed'))]",
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2022-01-01",
+      "name": "[format('nic-{0}', parameters('vmName'))]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('VNetName'), parameters('SubnetName'))]"
+              }
+            }
+          }
+        ]
+      }
     },
     {
       "type": "Microsoft.Compute/virtualMachines",
@@ -273,7 +296,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('nic-{0}', parameters('vmName')))]"
+              "id": "[if(parameters('publicIPAllowed'), resourceId('Microsoft.Network/networkInterfaces', format('nic-{0}', parameters('vmName'))), resourceId('Microsoft.Network/networkInterfaces', format('nic-{0}', parameters('vmName'))))]"
             }
           ]
         },
@@ -284,6 +307,7 @@
         }
       },
       "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', format('nic-{0}', parameters('vmName')))]",
         "[resourceId('Microsoft.Network/networkInterfaces', format('nic-{0}', parameters('vmName')))]"
       ]
     },
