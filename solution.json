@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.12.40.16777",
-      "templateHash": "15419159253492977000"
+      "templateHash": "2525620902949826538"
     }
   },
   "parameters": {
@@ -220,7 +220,6 @@
       }
     },
     {
-      "condition": "[parameters('publicIPAllowed')]",
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2022-01-01",
       "name": "[format('nic-{0}', parameters('vmName'))]",
@@ -229,41 +228,13 @@
         "ipConfigurations": [
           {
             "name": "ipconfig1",
-            "properties": {
-              "privateIPAllocationMethod": "Dynamic",
-              "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', format('pip-{0}', parameters('vmName')))]"
-              },
-              "subnet": {
-                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('VNetName'), parameters('SubnetName'))]"
-              }
-            }
+            "properties": "[if(parameters('publicIPAllowed'), createObject('privateIPAllocationMethod', 'Dynamic', 'publicIPAddress', createObject('id', resourceId('Microsoft.Network/publicIPAddresses', format('pip-{0}', parameters('vmName')))), 'subnet', createObject('id', resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('VNetName'), parameters('SubnetName')))), createObject('privateIPAllocationMethod', 'Dynamic', 'subnet', createObject('id', resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('VNetName'), parameters('SubnetName')))))]"
           }
         ]
       },
       "dependsOn": [
         "[resourceId('Microsoft.Network/publicIPAddresses', format('pip-{0}', parameters('vmName')))]"
       ]
-    },
-    {
-      "condition": "[not(parameters('publicIPAllowed'))]",
-      "type": "Microsoft.Network/networkInterfaces",
-      "apiVersion": "2022-01-01",
-      "name": "[format('nic-{0}', parameters('vmName'))]",
-      "location": "[parameters('location')]",
-      "properties": {
-        "ipConfigurations": [
-          {
-            "name": "ipconfig1",
-            "properties": {
-              "privateIPAllocationMethod": "Dynamic",
-              "subnet": {
-                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('VNetName'), parameters('SubnetName'))]"
-              }
-            }
-          }
-        ]
-      }
     },
     {
       "type": "Microsoft.Compute/virtualMachines",
@@ -296,7 +267,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[if(parameters('publicIPAllowed'), resourceId('Microsoft.Network/networkInterfaces', format('nic-{0}', parameters('vmName'))), resourceId('Microsoft.Network/networkInterfaces', format('nic-{0}', parameters('vmName'))))]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('nic-{0}', parameters('vmName')))]"
             }
           ]
         },
@@ -307,7 +278,6 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces', format('nic-{0}', parameters('vmName')))]",
         "[resourceId('Microsoft.Network/networkInterfaces', format('nic-{0}', parameters('vmName')))]"
       ]
     },
