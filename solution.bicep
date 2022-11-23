@@ -157,7 +157,7 @@ resource pip 'Microsoft.Network/publicIPAddresses@2022-01-01' = if(publicIPAllow
   }
 }
 
-resource nic 'Microsoft.Network/networkInterfaces@2022-01-01' = {
+resource nicpub 'Microsoft.Network/networkInterfaces@2022-01-01' = if(publicIPAllowed) {
   name: 'nic-${vmName}'
   location: location
   properties: {
@@ -166,9 +166,27 @@ resource nic 'Microsoft.Network/networkInterfaces@2022-01-01' = {
         name: 'ipconfig1'
         properties: {
           privateIPAllocationMethod: 'Dynamic'
-          publicIPAddress: (publicIPAllowed) ? {
+          publicIPAddress: {
             id: pip.id
-          }: null
+          }
+          subnet: {
+            id: resourceId('Microsoft.Network/virtualNetworks/subnets', VNetName, SubnetName)
+          }
+        }
+      }
+    ]
+  }
+}
+
+resource nicpvt 'Microsoft.Network/networkInterfaces@2022-01-01' = if(!publicIPAllowed) {
+  name: 'nic-${vmName}'
+  location: location
+  properties: {
+    ipConfigurations: [
+      {
+        name: 'ipconfig1'
+        properties: {
+          privateIPAllocationMethod: 'Dynamic'
           subnet: {
             id: resourceId('Microsoft.Network/virtualNetworks/subnets', VNetName, SubnetName)
           }

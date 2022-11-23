@@ -81,7 +81,9 @@ Else{"-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear()}
 
 # Download the MSIX Packaging Tool
 "Downloading MSIX Packaging Tool" | Out-File $Log -Append
-Invoke-WebRequest -Uri "https://download.microsoft.com/download/d/9/7/d9707be8-06db-4b13-a992-48666aad8b78/91b9474c34904fe39de2b66827a93267.msixbundle" -OutFile "C:\MSIX\MsixPackagingTool.msixbundle"
+Invoke-WebRequest -Uri "https://download.microsoft.com/download/5/5/d/55d00b0c-1246-4277-8f2a-b60e466317df/Desktop_MSIXPackagingTool_1.2022.1101.0_x64.x86.msixbundle_Windows10_PreinstallKit.zip" -OutFile "C:\MSIX\MsixPackagingTool.zip"
+Expand-Archive -Path "C:\MSIX\MSIXPackagingTool.zip" -DestinationPath "C:\MSIX\MSIXPackagingTool"
+$Bundle = Get-Content -Path "C:\MSIX\MSIXPackagingTool"
 If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
 Else{"-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear()}
 
