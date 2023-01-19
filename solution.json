@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.12.40.16777",
-      "templateHash": "2525620902949826538"
+      "templateHash": "11320223627263771888"
     }
   },
   "parameters": {
@@ -20,13 +20,6 @@
       "minLength": 12,
       "metadata": {
         "description": "Password for the Virtual Machine."
-      }
-    },
-    "publicIPAllowed": {
-      "type": "bool",
-      "defaultValue": true,
-      "metadata": {
-        "description": "Create the VM with a Public IP to access the Virtual Machine?"
       }
     },
     "OSVersion": {
@@ -207,19 +200,6 @@
   },
   "resources": [
     {
-      "condition": "[parameters('publicIPAllowed')]",
-      "type": "Microsoft.Network/publicIPAddresses",
-      "apiVersion": "2022-01-01",
-      "name": "[format('pip-{0}', parameters('vmName'))]",
-      "location": "[parameters('location')]",
-      "sku": {
-        "name": "Basic"
-      },
-      "properties": {
-        "publicIPAllocationMethod": "Dynamic"
-      }
-    },
-    {
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2022-01-01",
       "name": "[format('nic-{0}', parameters('vmName'))]",
@@ -228,13 +208,15 @@
         "ipConfigurations": [
           {
             "name": "ipconfig1",
-            "properties": "[if(parameters('publicIPAllowed'), createObject('privateIPAllocationMethod', 'Dynamic', 'publicIPAddress', createObject('id', resourceId('Microsoft.Network/publicIPAddresses', format('pip-{0}', parameters('vmName')))), 'subnet', createObject('id', resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('VNetName'), parameters('SubnetName')))), createObject('privateIPAllocationMethod', 'Dynamic', 'subnet', createObject('id', resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('VNetName'), parameters('SubnetName')))))]"
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('VNetName'), parameters('SubnetName'))]"
+              }
+            }
           }
         ]
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/publicIPAddresses', format('pip-{0}', parameters('vmName')))]"
-      ]
+      }
     },
     {
       "type": "Microsoft.Compute/virtualMachines",

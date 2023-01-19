@@ -17,7 +17,7 @@ Param(
     [string]$VMUserName,
 
     [parameter(Mandatory)]
-    [string]$VMUserPassword,
+    [securestring]$VMUserPassword,
 
     [parameter(Mandatory)]
     [string]$StorageSuffix
@@ -57,6 +57,7 @@ Else{"-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear()}
 New-Item -Path "C:\MSIX" -ItemType Directory
 New-Item -Path "C:\MSIX\Packages" -ItemType Directory
 New-Item -Path "C:\MSIX\Scripts" -ItemType Directory
+New-Item -Path "C:\MSIX\MSIXPackagingTool" -ItemType Directory
 If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
 Else{"-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear()}
 
@@ -83,7 +84,6 @@ Else{"-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear()}
 "Downloading MSIX Packaging Tool" | Out-File $Log -Append
 Invoke-WebRequest -Uri "https://download.microsoft.com/download/5/5/d/55d00b0c-1246-4277-8f2a-b60e466317df/Desktop_MSIXPackagingTool_1.2022.1101.0_x64.x86.msixbundle_Windows10_PreinstallKit.zip" -OutFile "C:\MSIX\MsixPackagingTool.zip"
 Expand-Archive -Path "C:\MSIX\MSIXPackagingTool.zip" -DestinationPath "C:\MSIX\MSIXPackagingTool"
-$Bundle = Get-Content -Path "C:\MSIX\MSIXPackagingTool"
 If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
 Else{"-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear()}
 
@@ -101,7 +101,9 @@ Else{"-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear()}
 Invoke-Command -ComputerName $ENV:COMPUTERNAME -Credential $Credential -ScriptBlock {
     # Installs the MSIX Packaging Tool
     "Installing MSIX Packaging Tool as $Using:VMUserName" | Out-File $Using:Log -Append
-    Add-AppPackage -Path "C:\MSIX\MsixPackagingTool.msixbundle"
+    $Bundle = (Get-Item -Path "C:\MSIX\MSIXPackagingTool\*.msixbundle").name
+
+    Add-AppPackage -Path "C:\MSIX\MSIXPackagingTool\$Bundle"
     If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Using:Log -Append}
     Else{"-----ERROR-----> $Error" | Out-File $Using:Log -Append; $Error.Clear()}
 

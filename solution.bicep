@@ -1,5 +1,5 @@
 @description('Username for the Virtual Machine.')
-param adminUsername string
+param adminUsername string = 'jcore'
 
 @description('Password for the Virtual Machine.')
 @minLength(12)
@@ -131,7 +131,7 @@ param VNetName string = 'vnet-eastus2-External'
 param SubnetName string = 'sub-eus2-extv-wkstns'
 
 @description('Storage Account where MSIX packages where be stored for AVD. (mapped for ease of copying resulting MSIX packages)')
-param StorageAcctName string = 'storeus2avdmsix'
+param StorageAcctName string = 'storavdlabeus2'
 
 @secure()
 @description('Storage Account Key used for mapping drive to MSIX Storage / share.')
@@ -164,19 +164,14 @@ resource nic 'Microsoft.Network/networkInterfaces@2022-01-01' = {
     ipConfigurations: [
       {
         name: 'ipconfig1'
-        properties: (publicIPAllowed) ? {
+        properties: {
           privateIPAllocationMethod: 'Dynamic'
-          publicIPAddress: {
+          subnet: {
+            id: resourceId('Microsoft.Network/virtualNetworks/subnets', VNetName, SubnetName)
+          }
+          publicIPAddress: publicIPAllowed ? {
             id: pip.id
-          }
-          subnet: {
-            id: resourceId('Microsoft.Network/virtualNetworks/subnets', VNetName, SubnetName)
-          }
-        } : {
-          privateIPAllocationMethod: 'Dynamic'
-          subnet: {
-            id: resourceId('Microsoft.Network/virtualNetworks/subnets', VNetName, SubnetName)
-          }
+          } : null
         }
       }
     ]
@@ -212,7 +207,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
     networkProfile: {
       networkInterfaces: [
         {
-          id: nic.id
+          id: resourceId('Microsoft.Network/networkInterfaces', nic.name)
         }
       ]
     }
