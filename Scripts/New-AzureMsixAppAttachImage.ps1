@@ -17,7 +17,7 @@ Param(
     [string]$VMUserName,
 
     [parameter(Mandatory)]
-    [securestring]$VMUserPassword,
+    [String]$VMUserPassword,
 
     [parameter(Mandatory)]
     [string]$StorageSuffix
