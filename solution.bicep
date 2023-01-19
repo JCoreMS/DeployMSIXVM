@@ -7,7 +7,7 @@ param adminUsername string = 'jcore'
 param adminPassword string
 
 @description('Create the VM with a Public IP to access the Virtual Machine?')
-param publicIPAllowed bool = true
+param publicIPAllowed bool = false
 
 @description('The Windows version for the VM. This will pick a fully patched image of this given Windows version.')
 @allowed([

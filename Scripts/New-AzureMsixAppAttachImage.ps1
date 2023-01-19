@@ -115,6 +115,8 @@ Invoke-Command -ComputerName $ENV:COMPUTERNAME -Credential $Credential -ScriptBl
     # cmd.exe /C "net use M: `\\$Using:StorageAccountName.file.core.windows.net\$Using:FileShareName $Using:StorageAccountKey /u:AZURE\$Using:StorageAccountName /persistent:yes" | Out-File $Using:Log -Append
     $FileShare = '\\' + $Using:StorageAccountName + '.file.' + $Using:StorageSuffix + '\' + $Using:FileShareName
     $Username = 'Azure\' + $Using:StorageAccountName
+    $FileShare | Out-File $Using:Log
+    $Username | Out-File $Using:Log
     $Password = ConvertTo-SecureString -String "$($Using:StorageAccountKey)" -AsPlainText -Force
     [pscredential]$Credential = New-Object System.Management.Automation.PSCredential ($Username, $Password)
     New-SmbGlobalMapping -RemotePath $FileShare -Credential $Credential -LocalPath 'M:'
