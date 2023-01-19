@@ -21,8 +21,7 @@ Invoke-WebRequest -Uri "https://download.microsoft.com/download/d/9/7/d9707be8-0
 Write-Host "Downloading PSF Toolling app from Windows Store..."
 Invoke-WebRequest -URI "https://www.tmurgent.com/APPV/Tools/PsfTooling/PsfTooling-x64-5.0.0.0.msix" -OutFile "C:\MSIX\PsfTooling-x64-5.0.0.0.msix"
 Write-Host "Installing MSIX Packaging Tool..."
-$Bundle = (Get-Item -Path "C:\MSIX\MSIXPackagingTool\*.msixbundle").name
-Add-AppPackage -Path "C:\MSIX\MSIXPackagingTool\$Bundle"
+Add-AppPackage -Path "C:\MSIX\MSIXPackagingTool.msixbundle"
 Write-Host "Installing PSF Tooling app..."
 Add-AppPackage -Path "C:\MSIX\PsfTooling-x64-5.0.0.0.msix"
 Write-Host "Stopping ShellHWDetection (Plug and Play) service and setting to disabled..."
