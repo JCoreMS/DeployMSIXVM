@@ -126,7 +126,7 @@ Invoke-Command -ComputerName $ENV:COMPUTERNAME -Credential $Credential -ScriptBl
 }
 
 Disable-PSRemoting -Force
-
+$Error.Clear()
 # Stops the Shell HW Detection service to prevent the format disk popup
 "Stoping Plug and Play Service and setting to disabled" | Out-file $Log -Append
 Stop-Service -Name ShellHWDetection -Force
