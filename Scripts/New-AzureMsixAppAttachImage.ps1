@@ -97,6 +97,9 @@ Enable-PSRemoting -Force
 If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
 Else{"-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear()}
 
+$FileShare = '\\' + $StorageAccountName + '.file.' + $StorageSuffix + '\' + $FileShareName
+$Username = 'Azure\' + $StorageAccountName
+
 Invoke-Command -ComputerName $ENV:COMPUTERNAME -Credential $Credential -ScriptBlock {
     # Installs the MSIX Packaging Tool
     "Installing MSIX Packaging Tool as $Using:VMUserName" | Out-File $Using:Log -Append
@@ -113,13 +116,11 @@ Invoke-Command -ComputerName $ENV:COMPUTERNAME -Credential $Credential -ScriptBl
     # Map Drive for MSIX Share
     "Mapping MSIX Share to M:" | Out-File $Using:Log -Append
     # cmd.exe /C "net use M: `\\$Using:StorageAccountName.file.core.windows.net\$Using:FileShareName $Using:StorageAccountKey /u:AZURE\$Using:StorageAccountName /persistent:yes" | Out-File $Using:Log -Append
-    $FileShare = '\\' + $Using:StorageAccountName + '.file.' + $Using:StorageSuffix + '\' + $Using:FileShareName
-    $Username = 'Azure\' + $Using:StorageAccountName
-    $FileShare | Out-File $Using:Log -Append
-    $Username | Out-File $Using:Log -Append
+    $Using:FileShare | Out-File $Using:Log -Append
+    $Using:Username | Out-File $Using:Log -Append
     $Password = ConvertTo-SecureString -String "$($Using:StorageAccountKey)" -AsPlainText -Force
-    [pscredential]$Credential = New-Object System.Management.Automation.PSCredential ($Username, $Password)
-    New-SmbGlobalMapping -RemotePath $FileShare -Credential $Credential -LocalPath 'M:'
+    [pscredential]$Credential = New-Object System.Management.Automation.PSCredential ($Using:Username, $Password)
+    New-SmbGlobalMapping -RemotePath $Using:FileShare -Credential $Credential -LocalPath 'M:'
     
     If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Using:Log -Append}
     Else{"-----ERROR-----> $Error" | Out-File $Using:Log -Append; $Error.Clear()}
