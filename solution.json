@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.20.4.51522",
-      "templateHash": "4281979194185221089"
+      "templateHash": "12177902018859008620"
     }
   },
   "parameters": {
@@ -145,7 +145,7 @@
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
               "subnet": {
-                "id": "[resourceId(parameters('VNet').id, parameters('SubnetName'))]"
+                "id": "[format('{0}/subnets/{1}', parameters('VNet').id, parameters('SubnetName'))]"
               },
               "publicIPAddress": "[if(parameters('publicIPAllowed'), createObject('id', resourceId('Microsoft.Network/publicIPAddresses', format('pip-{0}', parameters('vmName')))), null())]"
             }
