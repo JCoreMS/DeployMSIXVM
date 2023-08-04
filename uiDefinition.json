@@ -301,7 +301,7 @@
                 "OSoffer": "[if(contains(steps('basics').OSVersion, 'win10'), 'Windows-10', 'Windows-11')]",
                 "vmDiskType": "[steps('basics').DiskSku]",
 				"vmName": "[steps('basics').vmName]",
-				"VNetName": "[steps('basics').networking.virtualNetworkSelection.name]",
+				"VNet": "[steps('basics').networking.virtualNetworkSelection]",
 				"SubnetName": "[steps('basics').networking.subnet]",
 				"StorageAcctName": "[steps('basics').StorageAcctName.name]",
 				"StorageAcctKey": "[steps('basics').StorageAcctKey]",
