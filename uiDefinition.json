@@ -150,7 +150,7 @@
 							"constraints": {
 								"required": true
 							},
-							"visible": "[steps('basics').optionLocalCredsKeyvault]"
+							"visible": "[if(steps('basics').optionLocalCredsKeyvault, true, false)]"
 						},
 						{
 							"name": "kvLocalSecretName",
@@ -161,7 +161,7 @@
 							"constraints": {
 								"required": true
 							},
-							"visible": "[steps('basics').optionLocalCredsKeyvault]"
+							"visible": "[if(steps('basics').optionLocalCredsKeyvault, true, false)]"
 						},
 						{
 							"name": "adminPassword",
