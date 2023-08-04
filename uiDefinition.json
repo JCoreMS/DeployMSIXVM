@@ -294,7 +294,7 @@
 			"resourceGroupId": "[steps('basics').resourceScope.resourceGroup.id]",
 			"parameters": {
 				"adminUsername": "[steps('basics').adminUsername]",
-				"adminPassword": "[steps('basics').adminPassword]",
+				"adminPassword": "[steps('basics').adminPassword.password]",
 				"OSVersion": "[steps('basics').OSVersion]",
 				"vmSize": "[steps('basics').vmSize]",
 				"location": "[steps('basics').resourceScope.location.name]",
