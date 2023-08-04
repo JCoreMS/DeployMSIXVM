@@ -23,7 +23,7 @@
 							"type": "Microsoft.Common.TextBox",
 							"label": "Vm Name",
 							"subLabel": "",
-							"defaultValue": "vmMSIXTools",
+							"defaultValue": "vmAppAttachTools",
 							"toolTip": "Name of the virtual machine. (must be 15 characters or less)",
 							"constraints": {
 								"required": false,
@@ -69,7 +69,7 @@
 							"name": "DiskSku",
 							"type": "Microsoft.Common.DropDown",
 							"label": "OS Disk Sku",
-							"defaultValue": "Standard",
+							"defaultValue": "Standard SSD",
 							"toolTip": "The storage SKU for the AVD session host disks.  Production deployments should use Premium_LRS.",
 							"constraints": {
 								"required": false,
@@ -96,7 +96,7 @@
 							"label": "VM Size",
 							"toolTip": "",
 							"recommendedSizes": [
-								"Standard_D4s_v5"
+								"Standard_D2as_v5"
 							],
 							"constraints": {
 								"allowedSizes": []
@@ -113,7 +113,7 @@
 							"type": "Microsoft.Common.TextBox",
 							"label": "Admin Username",
 							"subLabel": "",
-							"defaultValue": "",
+							"defaultValue": "vmAdmin",
 							"toolTip": "Username for the Virtual Machine.",
 							"constraints": {
 								"required": true,
