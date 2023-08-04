@@ -4,129 +4,35 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.12.40.16777",
-      "templateHash": "11320223627263771888"
+      "version": "0.20.4.51522",
+      "templateHash": "16028057917731262055"
     }
   },
   "parameters": {
     "adminUsername": {
       "type": "string",
+      "defaultValue": "jcore",
       "metadata": {
         "description": "Username for the Virtual Machine."
       }
     },
     "adminPassword": {
-      "type": "secureString",
+      "type": "securestring",
       "minLength": 12,
       "metadata": {
         "description": "Password for the Virtual Machine."
       }
     },
+    "publicIPAllowed": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Create the VM with a Public IP to access the Virtual Machine?"
+      }
+    },
     "OSVersion": {
       "type": "string",
-      "defaultValue": "win10-21h2-ent-g2",
-      "allowedValues": [
-        "19h1-ent",
-        "19h1-ent-gensecond",
-        "19h1-entn",
-        "19h1-entn-gensecond",
-        "19h1-evd",
-        "19h1-pro",
-        "19h1-pro-gensecond",
-        "19h1-pro-zh-cn",
-        "19h1-pro-zh-cn-gensecond",
-        "19h1-pron",
-        "19h1-pron-gensecond",
-        "19h2-ent",
-        "19h2-ent-g2",
-        "19h2-entn",
-        "19h2-entn-g2",
-        "19h2-evd",
-        "19h2-evd-g2",
-        "19h2-pro",
-        "19h2-pro-g2",
-        "19h2-pro-zh-cn",
-        "19h2-pro-zh-cn-g2",
-        "19h2-pron",
-        "19h2-pron-g2",
-        "20h1-ent",
-        "20h1-ent-g2",
-        "20h1-entn",
-        "20h1-entn-g2",
-        "20h1-evd",
-        "20h1-evd-g2",
-        "20h1-pro",
-        "20h1-pro-g2",
-        "20h1-pro-zh-cn",
-        "20h1-pro-zh-cn-g2",
-        "20h1-pron",
-        "20h1-pron-g2",
-        "20h2-ent",
-        "20h2-ent-g2",
-        "20h2-entn",
-        "20h2-entn-g2",
-        "20h2-evd",
-        "20h2-evd-g2",
-        "20h2-pro",
-        "20h2-pro-g2",
-        "20h2-pro-zh-cn",
-        "20h2-pro-zh-cn-g2",
-        "20h2-pron",
-        "20h2-pron-g2",
-        "21h1-ent",
-        "21h1-ent-g2",
-        "21h1-entn",
-        "21h1-entn-g2",
-        "21h1-evd",
-        "21h1-evd-g2",
-        "21h1-pro",
-        "21h1-pro-g2",
-        "21h1-pro-zh-cn",
-        "21h1-pro-zh-cn-g2",
-        "21h1-pron",
-        "21h1-pron-g2",
-        "rs1-enterprise",
-        "rs1-enterprise-g2",
-        "rs1-enterprisen",
-        "rs1-enterprisen-g2",
-        "RS3-Pro",
-        "rs3-pro-test",
-        "RS3-ProN",
-        "rs4-pro",
-        "rs4-pro-g2",
-        "rs4-pron",
-        "rs5-enterprise",
-        "rs5-enterprise-g2",
-        "rs5-enterprise-standard",
-        "rs5-enterprise-standard-g2",
-        "rs5-enterprisen",
-        "rs5-enterprisen-g2",
-        "rs5-enterprisen-standard",
-        "rs5-enterprisen-standard-g2",
-        "rs5-evd",
-        "rs5-evd-g2",
-        "rs5-pro",
-        "rs5-pro-g2",
-        "rs5-pro-zh-cn-g2",
-        "rs5-pron",
-        "rs5-pron-g2",
-        "win10-21h2-avd",
-        "win10-21h2-avd-g2",
-        "win10-21h2-ent",
-        "win10-21h2-ent-g2",
-        "win10-21h2-ent-ltsc",
-        "win10-21h2-ent-ltsc-g2",
-        "win10-21h2-entn",
-        "win10-21h2-entn-g2",
-        "win10-21h2-entn-ltsc",
-        "win10-21h2-entn-ltsc-g2",
-        "win10-21h2-pro",
-        "win10-21h2-pro-g2",
-        "win10-21h2-pro-zh-cn",
-        "win10-21h2-pro-zh-cn-g2",
-        "win10-21h2-pron",
-        "win10-21h2-pron-g2"
-      ],
+      "defaultValue": "win11-22h2-ent",
       "metadata": {
         "description": "The Windows version for the VM. This will pick a fully patched image of this given Windows version."
       }
@@ -169,13 +75,13 @@
     },
     "StorageAcctName": {
       "type": "string",
-      "defaultValue": "storeus2avdmsix",
+      "defaultValue": "storavdlabeus2",
       "metadata": {
         "description": "Storage Account where MSIX packages where be stored for AVD. (mapped for ease of copying resulting MSIX packages)"
       }
     },
     "StorageAcctKey": {
-      "type": "secureString",
+      "type": "securestring",
       "metadata": {
         "description": "Storage Account Key used for mapping drive to MSIX Storage / share."
       }
@@ -200,6 +106,19 @@
   },
   "resources": [
     {
+      "condition": "[parameters('publicIPAllowed')]",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2022-01-01",
+      "name": "[format('pip-{0}', parameters('vmName'))]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Basic"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic"
+      }
+    },
+    {
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2022-01-01",
       "name": "[format('nic-{0}', parameters('vmName'))]",
@@ -212,11 +131,15 @@
               "privateIPAllocationMethod": "Dynamic",
               "subnet": {
                 "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('VNetName'), parameters('SubnetName'))]"
-              }
+              },
+              "publicIPAddress": "[if(parameters('publicIPAllowed'), createObject('id', resourceId('Microsoft.Network/publicIPAddresses', format('pip-{0}', parameters('vmName')))), null())]"
             }
           }
         ]
-      }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', format('pip-{0}', parameters('vmName')))]"
+      ]
     },
     {
       "type": "Microsoft.Compute/virtualMachines",
