@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.20.4.51522",
-      "templateHash": "2603002744314971354"
+      "templateHash": "4281979194185221089"
     }
   },
   "parameters": {
@@ -30,11 +30,23 @@
         "description": "Create the VM with a Public IP to access the Virtual Machine?"
       }
     },
+    "OSoffer": {
+      "type": "string",
+      "metadata": {
+        "description": "The Windows version for the VM."
+      }
+    },
     "OSVersion": {
       "type": "string",
       "defaultValue": "win11-22h2-ent",
       "metadata": {
-        "description": "The Windows version for the VM. This will pick a fully patched image of this given Windows version."
+        "description": "The Windows build version for the VM."
+      }
+    },
+    "vmDiskType": {
+      "type": "string",
+      "metadata": {
+        "description": "Size of the virtual machine."
       }
     },
     "vmSize": {
@@ -161,14 +173,14 @@
         "storageProfile": {
           "imageReference": {
             "publisher": "MicrosoftWindowsDesktop",
-            "offer": "Windows-10",
+            "offer": "[parameters('OSoffer')]",
             "sku": "[parameters('OSVersion')]",
             "version": "latest"
           },
           "osDisk": {
             "createOption": "FromImage",
             "managedDisk": {
-              "storageAccountType": "StandardSSD_LRS"
+              "storageAccountType": "[parameters('vmDiskType')]"
             }
           }
         },

@@ -9,8 +9,14 @@ param adminPassword string
 @description('Create the VM with a Public IP to access the Virtual Machine?')
 param publicIPAllowed bool = false
 
-@description('The Windows version for the VM. This will pick a fully patched image of this given Windows version.')
+@description('The Windows version for the VM.')
+param OSoffer string
+
+@description('The Windows build version for the VM.')
 param OSVersion string = 'win11-22h2-ent'
+
+@description('Size of the virtual machine.')
+param vmDiskType string
 
 @description('Size of the virtual machine.')
 param vmSize string = 'Standard_D2s_v5'
@@ -96,14 +102,14 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
     storageProfile: {
       imageReference: {
         publisher: 'MicrosoftWindowsDesktop'
-        offer: 'Windows-10'
+        offer: OSoffer
         sku: OSVersion
         version: 'latest'
       }
       osDisk: {
         createOption: 'FromImage'
         managedDisk: {
-          storageAccountType: 'StandardSSD_LRS'
+          storageAccountType: vmDiskType
         }
       }
     }

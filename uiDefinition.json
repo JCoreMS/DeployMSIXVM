@@ -40,7 +40,7 @@
 							"name": "OSVersion",
 							"type": "Microsoft.Common.DropDown",
 							"label": "OS Version",
-							"defaultValue": "win11-22h2-ent",
+							"defaultValue": "Windows 11 Ent (22H2)",
 							"toolTip": "The Windows version for the VM. This will be Gen 2 without Office.",
 							"constraints": {
 								"required": true,
@@ -298,6 +298,8 @@
 				"OSVersion": "[steps('basics').OSVersion]",
 				"vmSize": "[steps('basics').vmSize]",
 				"location": "[steps('basics').resourceScope.location.name]",
+                "OSoffer": "[if(contains(steps('basics').OSVersion, 'win10'), 'Windows-10', 'Windows-11')]",
+                "vmDiskType": "[steps('basics').DiskSku]",
 				"vmName": "[steps('basics').vmName]",
 				"VNetName": "[steps('basics').networking.virtualNetworkSelection.name]",
 				"SubnetName": "[steps('basics').networking.subnet]",
