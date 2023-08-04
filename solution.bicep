@@ -54,6 +54,9 @@ param Timestamp string = utcNow('u')
 
 
 var StorageSuffix = environment().suffixes.storage
+var VNetSub = split(VNet.id, '/')[2]
+var VNetRG = split(VNet.id, '/')[4]
+var VNetName = VNet.name
 
 resource pip 'Microsoft.Network/publicIPAddresses@2022-01-01' = if(publicIPAllowed) {
   name: 'pip-${vmName}'
@@ -76,7 +79,7 @@ resource nic 'Microsoft.Network/networkInterfaces@2022-01-01' = {
         properties: {
           privateIPAllocationMethod: 'Dynamic'
           subnet: {
-            id: '${VNet.id}/subnets/${SubnetName}'
+            id: resourceId(VNetSub, VNetRG, 'Microsoft.VirtualNetwork/virtualNetworks/subnets', VNetName, SubnetName)
           }
           publicIPAddress: publicIPAllowed ? {
             id: pip.id

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.20.4.51522",
-      "templateHash": "12177902018859008620"
+      "templateHash": "13088741468376006782"
     }
   },
   "parameters": {
@@ -117,7 +117,10 @@
     }
   },
   "variables": {
-    "StorageSuffix": "[environment().suffixes.storage]"
+    "StorageSuffix": "[environment().suffixes.storage]",
+    "VNetSub": "[split(parameters('VNet').id, '/')[2]]",
+    "VNetRG": "[split(parameters('VNet').id, '/')[4]]",
+    "VNetName": "[parameters('VNet').name]"
   },
   "resources": [
     {
@@ -145,7 +148,7 @@
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
               "subnet": {
-                "id": "[format('{0}/subnets/{1}', parameters('VNet').id, parameters('SubnetName'))]"
+                "id": "[resourceId(variables('VNetSub'), variables('VNetRG'), 'Microsoft.VirtualNetwork/virtualNetworks/subnets', variables('VNetName'), parameters('SubnetName'))]"
               },
               "publicIPAddress": "[if(parameters('publicIPAllowed'), createObject('id', resourceId('Microsoft.Network/publicIPAddresses', format('pip-{0}', parameters('vmName')))), null())]"
             }
