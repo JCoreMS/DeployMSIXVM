@@ -1,3 +1,8 @@
+
+$MSIXPackageURL = "https://download.microsoft.com/download/d/0/0/d0043667-b1db-4060-9c82-eaee1fa619e8/493b543c21624db8832da8791ebf98f3.msixbundle"
+
+$PsfToolPackageURL = "https://www.tmurgent.com/AppV/Tools/PsfTooling/PsfTooling-6.3.0.0-x64.msix"
+
 Write-Host "Installing NuGet package provider..."
 Install-PackageProvider -Name NuGet -Force
 Write-Host "Installing Hyper-V feature..."
@@ -17,13 +22,13 @@ Invoke-WebRequest -URI "https://raw.githubusercontent.com/JCoreMS/DeployMSIXVM/m
 Write-Host "Setting NIC profile to Private..."
 Set-NetConnectionProfile -InterfaceAlias Ethernet -NetworkCategory Private
 Write-Host "Downloading MSIX Packaging Tool from Windows Store..."
-Invoke-WebRequest -Uri "https://download.microsoft.com/download/d/9/7/d9707be8-06db-4b13-a992-48666aad8b78/91b9474c34904fe39de2b66827a93267.msixbundle" -OutFile "C:\MSIX\MsixPackagingTool.msixbundle"
+Invoke-WebRequest -Uri $MSIXPackageURL -OutFile "C:\MSIX\MsixPackagingTool.msixbundle"
 Write-Host "Downloading PSF Toolling app from Windows Store..."
-Invoke-WebRequest -URI "https://www.tmurgent.com/APPV/Tools/PsfTooling/PsfTooling-x64-5.0.0.0.msix" -OutFile "C:\MSIX\PsfTooling-x64-5.0.0.0.msix"
+Invoke-WebRequest -URI $PsfToolPackageURL -OutFile "C:\MSIX\PsfTooling-x64.msix"
 Write-Host "Installing MSIX Packaging Tool..."
 Add-AppPackage -Path "C:\MSIX\MSIXPackagingTool.msixbundle"
 Write-Host "Installing PSF Tooling app..."
-Add-AppPackage -Path "C:\MSIX\PsfTooling-x64-5.0.0.0.msix"
+Add-AppPackage -Path "C:\MSIX\PsfTooling-x64.msix"
 Write-Host "Stopping ShellHWDetection (Plug and Play) service and setting to disabled..."
 Write-Host "  This prevents pop-up when mounting VHDs." -ForegroundColor Cyan
 Stop-Service -Name ShellHWDetection -Force

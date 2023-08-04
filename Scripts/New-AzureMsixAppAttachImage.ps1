@@ -115,7 +115,7 @@ Invoke-Command -ComputerName $ENV:COMPUTERNAME -Credential $Credential -ScriptBl
 
     # Downloads and installs the PFSTooling Tool
     "Installing PSFTooling Tool as $Using:VMUserName" | Out-File $Using:Log -Append
-    Add-AppPackage -Path "C:\MSIX\PsfTooling-x64-5.0.0.0.msix"
+    Add-AppPackage -Path "C:\MSIX\PsfTooling-x64.msix"
     If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Using:Log -Append}
     Else{"-----ERROR-----> $Error" | Out-File $Using:Log -Append; $Error.Clear()}
 
