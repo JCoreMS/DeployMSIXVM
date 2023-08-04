@@ -23,13 +23,18 @@ param location string = resourceGroup().location
 param vmName string = 'vmMSIXTools'
 
 @description('Virtual Network to attach MSIX Tools VM to.')
-param VNetName string = 'vnet-eastus2-External'
+param VNet object = {
+  name: ''
+  id: ''
+  location: ''
+  subscriptionName: ''
+}
 
 @description('Subnet to use for MSIX VM Tools VM.')
-param SubnetName string = 'sub-eus2-extv-wkstns'
+param SubnetName string
 
 @description('Storage Account where MSIX packages where be stored for AVD. (mapped for ease of copying resulting MSIX packages)')
-param StorageAcctName string = 'storavdlabeus2'
+param StorageAcctName string
 
 @secure()
 @description('Storage Account Key used for mapping drive to MSIX Storage / share.')
@@ -65,7 +70,7 @@ resource nic 'Microsoft.Network/networkInterfaces@2022-01-01' = {
         properties: {
           privateIPAllocationMethod: 'Dynamic'
           subnet: {
-            id: resourceId('Microsoft.Network/virtualNetworks/subnets', VNetName, SubnetName)
+            id: resourceId(VNet.id, SubnetName)
           }
           publicIPAddress: publicIPAllowed ? {
             id: pip.id

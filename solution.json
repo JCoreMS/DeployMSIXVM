@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.20.4.51522",
-      "templateHash": "16028057917731262055"
+      "templateHash": "2603002744314971354"
     }
   },
   "parameters": {
@@ -59,23 +59,26 @@
         "description": "Name of the virtual machine. (must be 15 characters or less)"
       }
     },
-    "VNetName": {
-      "type": "string",
-      "defaultValue": "vnet-eastus2-External",
+    "VNet": {
+      "type": "object",
+      "defaultValue": {
+        "name": "",
+        "id": "",
+        "location": "",
+        "subscriptionName": ""
+      },
       "metadata": {
         "description": "Virtual Network to attach MSIX Tools VM to."
       }
     },
     "SubnetName": {
       "type": "string",
-      "defaultValue": "sub-eus2-extv-wkstns",
       "metadata": {
         "description": "Subnet to use for MSIX VM Tools VM."
       }
     },
     "StorageAcctName": {
       "type": "string",
-      "defaultValue": "storavdlabeus2",
       "metadata": {
         "description": "Storage Account where MSIX packages where be stored for AVD. (mapped for ease of copying resulting MSIX packages)"
       }
@@ -130,7 +133,7 @@
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
               "subnet": {
-                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('VNetName'), parameters('SubnetName'))]"
+                "id": "[resourceId(parameters('VNet').id, parameters('SubnetName'))]"
               },
               "publicIPAddress": "[if(parameters('publicIPAllowed'), createObject('id', resourceId('Microsoft.Network/publicIPAddresses', format('pip-{0}', parameters('vmName')))), null())]"
             }
