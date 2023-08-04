@@ -23,6 +23,12 @@ Param(
     [string]$StorageSuffix
 )
 
+# URLs for MSIX and PsfTooling packages
+# version 1.2023.319.0
+$MSIXPackageURL = "https://download.microsoft.com/download/d/0/0/d0043667-b1db-4060-9c82-eaee1fa619e8/493b543c21624db8832da8791ebf98f3.msixbundle"
+
+$PsfToolPackageURL = "https://www.tmurgent.com/AppV/Tools/PsfTooling/PsfTooling-6.3.0.0-x64.msix"
+
 # Create Log file for output and troublehsooting
 $Log = "C:\PostConfig.log"
 New-Item $Log
@@ -82,13 +88,13 @@ Else{"-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear()}
 
 # Download the MSIX Packaging Tool
 "Downloading MSIX Packaging Tool" | Out-File $Log -Append
-Invoke-WebRequest -Uri "https://download.microsoft.com/download/d/9/7/d9707be8-06db-4b13-a992-48666aad8b78/91b9474c34904fe39de2b66827a93267.msixbundle" -OutFile "C:\MSIX\MsixPackagingTool.msixbundle"
+Invoke-WebRequest -Uri $MSIXPackageURL -OutFile "C:\MSIX\MsixPackagingTool.msixbundle"
 If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
 Else{"-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear()}
 
 # Download the PFSTooling Tool
 "Downloading PSFTooling Tool" | Out-File $Log -Append
-Invoke-WebRequest -URI "https://www.tmurgent.com/APPV/Tools/PsfTooling/PsfTooling-x64-5.0.0.0.msix" -OutFile "C:\MSIX\PsfTooling-x64-5.0.0.0.msix"
+Invoke-WebRequest -URI $PsfToolPackageURL -OutFile "C:\MSIX\PsfTooling-x64.msix"
 If($Error.Count -eq 0){".... COMPLETED!" | Out-File $Log -Append}
 Else{"-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear()}
 
