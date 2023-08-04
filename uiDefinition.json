@@ -166,7 +166,7 @@
 						{
 							"name": "adminPassword",
 							"type": "Microsoft.Compute.CredentialsCombo",
-							"visible": "[if(steps('basics').optionLocalCredsKeyvault, false, true)]",
+							"visible": "[if(equals(steps('basics').optionLocalCredsKeyvault, false, true))]",
 							"label": {
 								"password": "Password",
 								"confirmPassword": "Confirm password"
