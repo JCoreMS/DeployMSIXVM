@@ -23,7 +23,7 @@
                             "type": "Microsoft.Common.TextBox",
                             "label": "Vm Name",
                             "subLabel": "",
-                            "defaultValue": "vmAppAttachTools",
+                            "defaultValue": "vmAppAttach01",
                             "toolTip": "Name of the virtual machine. (must be 15 characters or less)",
                             "constraints": {
                                 "required": false,
