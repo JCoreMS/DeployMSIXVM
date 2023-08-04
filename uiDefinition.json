@@ -164,6 +164,25 @@
 							"visible": "[equals(steps('basics').optionLocalCredsKeyvault, true)]"
 						},
 						{
+							"name": "adminPassword",
+							"type": "Microsoft.Compute.CredentialsCombo",
+							"visible": "[if(equals(steps('basics').optionLocalCredsKeyvault, false, true))]",
+							"label": {
+								"password": "Password",
+								"confirmPassword": "Confirm password"
+							},
+							"toolTip": {
+								"password": "The password must be alphanumeric, contain at least 12 characters, have at least 1 letter,1 number and 1 special character."
+							},
+							"constraints": {
+								"required": true
+							},
+							"options": {
+								"hideConfirmation": false
+							},
+							"osPlatform": "Windows"
+						},
+						{
 							"name": "networking",
                             "type": "Microsoft.Common.Section",
 							"label": "Virtual Networking",
