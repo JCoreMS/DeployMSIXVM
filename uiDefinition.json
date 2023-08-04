@@ -134,12 +134,12 @@
 							"name": "optionLocalCredsKeyvault",
 							"type": "Microsoft.Common.CheckBox",
 							"label": "Use Keyvault for Credentials",
-							"defaultValue": true,
+							"defaultValue": false,
 							"toolTip": "Use credentials stored in an existing Keyvault.",
 							"constraints": {
 								"required": false
 							},
-							"visible": true
+							"visible": false
 						},
 						{
 							"name": "kvLocal",
