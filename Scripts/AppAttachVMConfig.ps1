@@ -23,7 +23,10 @@ Param(
     [SecureString]$VMUserPassword,
 
     [parameter(Mandatory)]
-    [string]$StorageSuffix
+    [string]$StorageSuffix,
+
+    [parameter(Mandatory)]
+    [string]$PostDeployScriptURI
 )
 
 # URLs for MSIX and PsfTooling packages
@@ -76,7 +79,7 @@ Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
 
 # Download Script to convert MSIX to VHD
 "Downloading MSIX to VHD Script" | Out-File $Log -Append
-Invoke-WebRequest -URI "https://raw.githubusercontent.com/JCoreMS/DeployMSIXVM/main/Scripts/ConvertMSIX2VHD.ps1" -OutFile "C:\MSIX\Scripts\ConvertMSIX2VHD.ps1"
+Invoke-WebRequest -URI $PostDeployScriptURI + "ConvertMSIX2VHD.ps1" -OutFile "C:\MSIX\Scripts\ConvertMSIX2VHD.ps1"
 If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
 Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
 
@@ -128,8 +131,8 @@ $FileShare = '\\' + $StorageAccountName + '.file.' + $StorageSuffix + '\' + $Fil
 $Password = ConvertTo-SecureString -String $StoragePassword -AsPlainText -Force
 [pscredential]$Credential = New-Object System.Management.Automation.PSCredential ($StorageUserAcct, $Password)
 New-SmbGlobalMapping -RemotePath $FileShare -Credential $Credential -LocalPath 'M:'
-If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Using:Log -Append }
-Else { "-----ERROR-----> $Error" | Out-File $Using:Log -Append; $Error.Clear() }
+If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
+Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
 
 # Stops the Shell HW Detection service to prevent the format disk popup
 "Stoping Plug and Play Service and setting to disabled" | Out-file $Log -Append
