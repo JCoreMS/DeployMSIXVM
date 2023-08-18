@@ -1,0 +1,176 @@
+# Prerequisites
+# Stage the application and its associated conversion XML file in an Azure Storage Account Container
+# Established an SMB share for the MSIX App Attach images
+
+Param(
+
+    [parameter(Mandatory)]
+    [string]$FileShareName,
+
+    [parameter(Mandatory)]
+    [String]$StorageUserAcct,
+
+    [parameter(Mandatory)]
+    [SecureString]$StoragePassword,
+
+    [parameter(Mandatory)]
+    [string]$StorageAccountName,
+
+    [parameter(Mandatory)]
+    [string]$VMUserName,
+
+    [parameter(Mandatory)]
+    [SecureString]$VMUserPassword,
+
+    [parameter(Mandatory)]
+    [string]$StorageSuffix
+)
+
+# URLs for MSIX and PsfTooling packages
+# version 1.2023.319.0
+$MSIXPackageURL = "https://download.microsoft.com/download/d/0/0/d0043667-b1db-4060-9c82-eaee1fa619e8/493b543c21624db8832da8791ebf98f3.msixbundle"
+
+$PsfToolPackageURL = "https://www.tmurgent.com/AppV/Tools/PsfTooling/PsfTooling-6.3.0.0-x64.msix"
+
+# Create Log file for output and troublehsooting
+$Log = "C:\PostConfig.log"
+New-Item $Log
+Get-Date | Out-file $Log
+
+$Username = $ENV:COMPUTERNAME + '\' + $VMUserName
+$Username | Out-File $Log -Append
+
+$Error.Clear()
+
+#Install NuGet and Hyper-V tools
+"Installing NuGet Provider needed for Hyper-V module" | Out-File $Log -Append
+Install-PackageProvider -Name NuGet -Force
+If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
+Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
+
+"Installing Hyper-V Windows Component needed to convert MSIX to VHD" | Out-File $Log -Append
+Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRestart
+If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
+Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
+
+"Installing Azure PowerShell Cmdlets" | Out-File $Log -Append
+Install-Module -Name Az.Storage -Force
+If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
+Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
+
+#Make Local MSIX Dir for tools
+"Creating Directories" | Out-File $Log -Append
+New-Item -Path "C:\MSIX" -ItemType Directory
+New-Item -Path "C:\MSIX\Packages" -ItemType Directory
+New-Item -Path "C:\MSIX\Scripts" -ItemType Directory
+New-Item -Path "C:\MSIX\MSIXPackagingTool" -ItemType Directory
+If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
+Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
+
+# Downloads and extracts the MSIX Manager Tool
+"Downloading and Extracting the MSIX Manager Command Line tool" | Out-File $Log -Append
+Invoke-WebRequest -URI "https://aka.ms/msixmgr" -OutFile "C:\MSIX\MSIXmgrTool.zip"
+Expand-Archive -Path "C:\MSIX\MSIXmgrTool.zip" -DestinationPath "C:\MSIX\msixmgr"
+If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
+Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
+
+# Download Script to convert MSIX to VHD
+"Downloading MSIX to VHD Script" | Out-File $Log -Append
+Invoke-WebRequest -URI "https://raw.githubusercontent.com/JCoreMS/DeployMSIXVM/main/Scripts/ConvertMSIX2VHD.ps1" -OutFile "C:\MSIX\Scripts\ConvertMSIX2VHD.ps1"
+If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
+Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
+
+# Configure NIC to Private (Dependency for PSRemoting)
+"Set Network Adapter to Private Profile (req'd for PSRemoting)" | Out-file $Log -Append
+Set-NetConnectionProfile -InterfaceAlias Ethernet -NetworkCategory Private
+If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
+Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
+
+# Download the MSIX Packaging Tool
+"Downloading MSIX Packaging Tool" | Out-File $Log -Append
+Invoke-WebRequest -Uri $MSIXPackageURL -OutFile "C:\MSIX\MsixPackagingTool.msixbundle"
+If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
+Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
+
+# Download the PFSTooling Tool
+"Downloading PSFTooling Tool" | Out-File $Log -Append
+Invoke-WebRequest -URI $PsfToolPackageURL -OutFile "C:\MSIX\PsfTooling-x64.msix"
+If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
+Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
+
+"Enabling PSRemoting" | Out-file $Log -Append
+Enable-PSRemoting -Force
+If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
+Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
+
+Invoke-Command -ComputerName $ENV:COMPUTERNAME -Credential $Credential -ScriptBlock {
+    # Installs the MSIX Packaging Tool
+    "Installing MSIX Packaging Tool as $Using:VMUserName" | Out-File $Using:Log -Append
+    Add-AppPackage -Path "C:\MSIX\MSIXPackagingTool.msixbundle"
+    If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Using:Log -Append }
+    Else { "-----ERROR-----> $Error" | Out-File $Using:Log -Append; $Error.Clear() }
+
+    # Downloads and installs the PFSTooling Tool
+    "Installing PSFTooling Tool as $Using:VMUserName" | Out-File $Using:Log -Append
+    Add-AppPackage -Path "C:\MSIX\PsfTooling-x64.msix"
+    If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Using:Log -Append }
+    Else { "-----ERROR-----> $Error" | Out-File $Using:Log -Append; $Error.Clear() }
+   
+}
+
+Disable-PSRemoting -Force
+$Error.Clear()
+
+# Map Drive for MSIX Share
+"Mapping MSIX Share to M:" | Out-File $Log -Append
+$FileShare = '\\' + $StorageAccountName + '.file.' + $StorageSuffix + '\' + $FileShareName
+# cmd.exe /C "net use M: `\\$Using:StorageAccountName.file.core.windows.net\$Using:FileShareName $Using:StorageAccountKey /u:AZURE\$Using:StorageAccountName /persistent:yes" | Out-File $Using:Log -Append
+$Password = ConvertTo-SecureString -String $StoragePassword -AsPlainText -Force
+[pscredential]$Credential = New-Object System.Management.Automation.PSCredential ($StorageUserAcct, $Password)
+New-SmbGlobalMapping -RemotePath $FileShare -Credential $Credential -LocalPath 'M:'
+If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Using:Log -Append }
+Else { "-----ERROR-----> $Error" | Out-File $Using:Log -Append; $Error.Clear() }
+
+# Stops the Shell HW Detection service to prevent the format disk popup
+"Stoping Plug and Play Service and setting to disabled" | Out-file $Log -Append
+Stop-Service -Name ShellHWDetection -Force
+set-service -Name ShellHWDetection -StartupType Disabled
+If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
+Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
+
+# Turn off auto updates
+"Turn Off Auto Updates via Registry and Disable Scheduled Tasks" | Out-File $Log -Append
+reg add HKLM\Software\Policies\Microsoft\WindowsStore /v AutoDownload /t REG_DWORD /d 0 /f
+Schtasks /Change /Tn "\Microsoft\Windows\WindowsUpdate\Scheduled Start" /Disable
+If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
+Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
+
+# Disable Content Delivery auto download apps that they want to promote to users:
+"Disable Content Delivery auto download apps" | Out-File $Log -Append
+reg add HKEY_USERS\.DEFAULT\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager /v PreInstalledAppsEnabled /t REG_DWORD /d 0 /f
+reg add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager\Debug /v ContentDeliveryAllowedOverride /t REG_DWORD /d 0x2 /f
+If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
+Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
+
+"Set Network Adapter back to Prublic Profile" | Out-file $Log -Append
+Set-NetConnectionProfile -InterfaceAlias Ethernet -NetworkCategory Public
+If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
+Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
+
+# Create and install Self-Signed Code Signing Certificate
+"Creating Self Signed Code Signing Certificate" | Out-File $Log -Append
+$Cert = New-SelfSignedCertificate -FriendlyName "MSIX App Attach Test CodeSigning" -CertStoreLocation Cert:\LocalMachine\My -Subject "MSIXAppAttachTest" -Type CodeSigningCert
+If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
+Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
+
+"Moving Cert from Personal to Trusted People Store on Local Machine"
+$Cert | Move-Item -Destination cert:\LocalMachine\TrustedPeople | Out-File $Log -Append
+If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
+Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
+
+"-------------------------- END SCRIPT RUN ------------------------" | Out-File $Log -Append
+
+"Rebooting VM...." | Out-File $Log -Append
+Restart-Computer -Force
+If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
+Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
