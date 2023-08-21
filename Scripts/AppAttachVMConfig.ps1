@@ -78,8 +78,9 @@ If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
 Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
 
 # Download Script to convert MSIX to VHD
-"Downloading MSIX to VHD Script" | Out-File $Log -Append
-Invoke-WebRequest -URI $PostDeployScriptURI + "ConvertMSIX2VHD.ps1" -OutFile "C:\MSIX\Scripts\ConvertMSIX2VHD.ps1"
+$ScriptURI = $PostDeployScriptURI + "ConvertMSIX2VHD.ps1"
+"Downloading MSIX to VHD Script: $ScriptURI" | Out-File $Log -Append
+Invoke-WebRequest -URI $ScriptURI -OutFile "C:\MSIX\Scripts\ConvertMSIX2VHD.ps1"
 If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
 Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
 
