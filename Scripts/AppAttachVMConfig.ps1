@@ -11,7 +11,7 @@ Param(
     [String]$StorageUserAcct,
 
     [parameter(Mandatory)]
-    [SecureString]$StoragePassword,
+    [String]$StoragePassword,
 
     [parameter(Mandatory)]
     [string]$StorageAccountName,
@@ -20,7 +20,7 @@ Param(
     [string]$VMUserName,
 
     [parameter(Mandatory)]
-    [SecureString]$VMUserPassword,
+    [String]$VMUserPassword,
 
     [parameter(Mandatory)]
     [string]$StorageSuffix,
