@@ -131,7 +131,8 @@ $FileShare = '\\' + $StorageAccountName + '.file.' + $StorageSuffix + '\' + $Fil
 # cmd.exe /C "net use M: `\\$Using:StorageAccountName.file.core.windows.net\$Using:FileShareName $Using:StorageAccountKey /u:AZURE\$Using:StorageAccountName /persistent:yes" | Out-File $Using:Log -Append
 $Password = ConvertTo-SecureString -String $StoragePassword -AsPlainText -Force
 [pscredential]$Credential = New-Object System.Management.Automation.PSCredential ($StorageUserAcct, $Password)
-New-SmbGlobalMapping -RemotePath $FileShare -Credential $Credential -LocalPath 'M:'
+New-PSDrive -Name M -PSProvider FileSystem -Root $FileShare -Credential $Credential -Persist
+# New-SmbGlobalMapping -RemotePath $FileShare -Credential $Credential -LocalPath 'M:'
 If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
 Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
 
