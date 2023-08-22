@@ -84,6 +84,12 @@ Invoke-WebRequest -URI $ScriptURI -OutFile "C:\MSIX\Scripts\ConvertMSIX2VHD.ps1"
 If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
 Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
 
+# Configure NIC to Private (Dependency for PSRemoting)
+"Set Network Adapter to Private Profile (req'd for PSRemoting)" | Out-file $Log -Append
+Set-NetConnectionProfile -InterfaceAlias Ethernet -NetworkCategory Private
+If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
+Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
+
 # Download the MSIX Packaging Tool
 "Downloading MSIX Packaging Tool" | Out-File $Log -Append
 Invoke-WebRequest -Uri $MSIXPackageURL -OutFile "C:\MSIX\MsixPackagingTool.msixbundle"
@@ -96,18 +102,27 @@ Invoke-WebRequest -URI $PsfToolPackageURL -OutFile "C:\MSIX\PsfTooling-x64.msix"
 If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
 Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
 
-# Installs the MSIX Packaging Tool
-"Installing MSIX Packaging Tool as $VMUserName" | Out-File $Using:Log -Append
-Add-AppPackage -Path "C:\MSIX\MSIXPackagingTool.msixbundle"
+"Enabling PSRemoting" | Out-file $Log -Append
+Enable-PSRemoting -Force
 If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
 Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
 
-# Downloads and installs the PFSTooling Tool
-"Installing PSFTooling Tool as $VMUserName" | Out-File $Log -Append
-Add-AppPackage -Path "C:\MSIX\PsfTooling-x64.msix"
-If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
-Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
+Invoke-Command -ComputerName $ENV:COMPUTERNAME -Credential $Credential -ScriptBlock {
+    # Installs the MSIX Packaging Tool
+    "Installing MSIX Packaging Tool as $Using:VMUserName" | Out-File $Using:Log -Append
+    Add-AppPackage -Path "C:\MSIX\MSIXPackagingTool.msixbundle"
+    If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Using:Log -Append }
+    Else { "-----ERROR-----> $Error" | Out-File $Using:Log -Append; $Error.Clear() }
 
+    # Downloads and installs the PFSTooling Tool
+    "Installing PSFTooling Tool as $Using:VMUserName" | Out-File $Using:Log -Append
+    Add-AppPackage -Path "C:\MSIX\PsfTooling-x64.msix"
+    If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Using:Log -Append }
+    Else { "-----ERROR-----> $Error" | Out-File $Using:Log -Append; $Error.Clear() }
+   
+}
+
+Disable-PSRemoting -Force
 $Error.Clear()
 
 # Map Drive for MSIX Share
@@ -139,6 +154,11 @@ Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
 "Disable Content Delivery auto download apps" | Out-File $Log -Append
 reg add HKEY_USERS\.DEFAULT\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager /v PreInstalledAppsEnabled /t REG_DWORD /d 0 /f
 reg add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager\Debug /v ContentDeliveryAllowedOverride /t REG_DWORD /d 0x2 /f
+If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
+Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
+
+"Set Network Adapter back to Prublic Profile" | Out-file $Log -Append
+Set-NetConnectionProfile -InterfaceAlias Ethernet -NetworkCategory Public
 If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
 Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
 
