@@ -119,22 +119,22 @@ Invoke-Command -ComputerName $ENV:COMPUTERNAME -Credential $Credential -ScriptBl
     Add-AppPackage -Path "C:\MSIX\PsfTooling-x64.msix"
     If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Using:Log -Append }
     Else { "-----ERROR-----> $Error" | Out-File $Using:Log -Append; $Error.Clear() }
+    
+    # Map Drive for MSIX Share
+    "Mapping MSIX Share to M:" | Out-File $Log -Append
+    $FileShare = '\\' + $Using:StorageAccountName + '.file.' + $Using:StorageSuffix + '\' + $Using:FileShareName
+    # cmd.exe /C "net use M: `\\$Using:StorageAccountName.file.core.windows.net\$Using:FileShareName $Using:StorageAccountKey /u:AZURE\$Using:StorageAccountName /persistent:yes" | Out-File $Using:Log -Append
+    $Password = ConvertTo-SecureString -String $Using:StoragePassword -AsPlainText -Force
+    [pscredential]$Credential = New-Object System.Management.Automation.PSCredential ($Using:StorageUserAcct, $Password)
+    New-PSDrive -Name M -PSProvider FileSystem -Root $Using:FileShare -Credential $Credential -Persist
+    # New-SmbGlobalMapping -RemotePath $FileShare -Credential $Credential -LocalPath 'M:'
+    If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Using:Log -Append }
+    Else { "-----ERROR-----> $Error" | Out-File $Using:Log -Append; $Error.Clear() }
    
 }
 
 Disable-PSRemoting -Force
 $Error.Clear()
-
-# Map Drive for MSIX Share
-"Mapping MSIX Share to M:" | Out-File $Log -Append
-$FileShare = '\\' + $StorageAccountName + '.file.' + $StorageSuffix + '\' + $FileShareName
-# cmd.exe /C "net use M: `\\$Using:StorageAccountName.file.core.windows.net\$Using:FileShareName $Using:StorageAccountKey /u:AZURE\$Using:StorageAccountName /persistent:yes" | Out-File $Using:Log -Append
-$Password = ConvertTo-SecureString -String $StoragePassword -AsPlainText -Force
-[pscredential]$Credential = New-Object System.Management.Automation.PSCredential ($StorageUserAcct, $Password)
-New-PSDrive -Name M -PSProvider FileSystem -Root $FileShare -Credential $Credential -Persist
-# New-SmbGlobalMapping -RemotePath $FileShare -Credential $Credential -LocalPath 'M:'
-If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
-Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
 
 # Stops the Shell HW Detection service to prevent the format disk popup
 "Stoping Plug and Play Service and setting to disabled" | Out-file $Log -Append
