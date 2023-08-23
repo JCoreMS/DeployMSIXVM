@@ -107,7 +107,24 @@ Enable-PSRemoting -Force
 If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
 Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
 
-Invoke-Command -ComputerName $ENV:COMPUTERNAME -Credential $Credential -ScriptBlock {
+# Credentials for Invoke-Command to run as Local Admin vs System
+"Creating Credentials for VM Admin" | Out-File $Log -Append
+$VMPassword = ConvertTo-SecureString -String $VMUserPassword -AsPlainText -Force
+[pscredential]$VMCredential = New-Object System.Management.Automation.PSCredential ($VMUserName, $VMPassword)
+If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
+Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
+
+# Credentials for Drive Mapping
+"Creating Credentials for Drive Mapping" | Out-File $Log -Append
+$DriveMapPassword = ConvertTo-SecureString -String $StoragePassword -AsPlainText -Force
+[pscredential]$StorageCredential = New-Object System.Management.Automation.PSCredential ($StorageUserAcct, $DriveMapPassword)
+# File Share Mapping prework
+$FileShare = '\\' + $StorageAccountName + '.file.' + $StorageSuffix + '\' + $FileShareName
+"--> " + $FileShare | Out-File $Log -Append
+If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
+Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
+
+Invoke-Command -ComputerName $ENV:COMPUTERNAME -Credential $VMCredential -ScriptBlock {
     # Installs the MSIX Packaging Tool
     "Installing MSIX Packaging Tool as $Using:VMUserName" | Out-File $Using:Log -Append
     Add-AppPackage -Path "C:\MSIX\MSIXPackagingTool.msixbundle"
@@ -122,19 +139,18 @@ Invoke-Command -ComputerName $ENV:COMPUTERNAME -Credential $Credential -ScriptBl
     
     # Map Drive for MSIX Share
     "Mapping MSIX Share to M:" | Out-File $Log -Append
-    $FileShare = '\\' + $Using:StorageAccountName + '.file.' + $Using:StorageSuffix + '\' + $Using:FileShareName
-    # cmd.exe /C "net use M: `\\$Using:StorageAccountName.file.core.windows.net\$Using:FileShareName $Using:StorageAccountKey /u:AZURE\$Using:StorageAccountName /persistent:yes" | Out-File $Using:Log -Append
-    $Password = ConvertTo-SecureString -String $Using:StoragePassword -AsPlainText -Force
-    [pscredential]$Credential = New-Object System.Management.Automation.PSCredential ($Using:StorageUserAcct, $Password)
-    New-PSDrive -Name M -PSProvider FileSystem -Root $Using:FileShare -Credential $Credential -Persist
+
+    New-PSDrive -Name M -PSProvider FileSystem -Root $Using:FileShare -Credential $StorageCredential -Persist
     # New-SmbGlobalMapping -RemotePath $FileShare -Credential $Credential -LocalPath 'M:'
     If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Using:Log -Append }
     Else { "-----ERROR-----> $Error" | Out-File $Using:Log -Append; $Error.Clear() }
    
 }
-
+# Disable PSRemoting after Invoke Command
+"Disabling PSRemoting" | Out-file $Log -Append
 Disable-PSRemoting -Force
-$Error.Clear()
+If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
+Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
 
 # Stops the Shell HW Detection service to prevent the format disk popup
 "Stoping Plug and Play Service and setting to disabled" | Out-file $Log -Append
