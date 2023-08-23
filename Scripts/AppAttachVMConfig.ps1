@@ -139,8 +139,7 @@ Invoke-Command -ComputerName $ENV:COMPUTERNAME -Credential $VMCredential -Script
     
     # Map Drive for MSIX Share
     "Mapping MSIX Share to M:" | Out-File $Log -Append
-
-    New-PSDrive -Name M -PSProvider FileSystem -Root $Using:FileShare -Credential $StorageCredential -Persist
+    New-PSDrive -Name M -PSProvider FileSystem -Root $Using:FileShare -Credential $Using:StorageCredential -Persist
     # New-SmbGlobalMapping -RemotePath $FileShare -Credential $Credential -LocalPath 'M:'
     If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Using:Log -Append }
     Else { "-----ERROR-----> $Error" | Out-File $Using:Log -Append; $Error.Clear() }
