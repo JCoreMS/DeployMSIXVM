@@ -5,25 +5,10 @@
 Param(
 
     [parameter(Mandatory)]
-    [string]$FileShareName,
-
-    [parameter(Mandatory)]
-    [String]$StorageUserAcct,
-
-    [parameter(Mandatory)]
-    [String]$StoragePassword,
-
-    [parameter(Mandatory)]
-    [string]$StorageAccountName,
-
-    [parameter(Mandatory)]
     [string]$VMUserName,
 
     [parameter(Mandatory)]
     [String]$VMUserPassword,
-
-    [parameter(Mandatory)]
-    [string]$StorageSuffix,
 
     [parameter(Mandatory)]
     [string]$PostDeployScriptURI
@@ -114,15 +99,15 @@ $VMPassword = ConvertTo-SecureString -String $VMUserPassword -AsPlainText -Force
 If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
 Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
 
-# Credentials for Drive Mapping
+<# # Credentials for Drive Mapping
 "Creating Credentials for Drive Mapping" | Out-File $Log -Append
 $DriveMapPassword = ConvertTo-SecureString -String $StoragePassword -AsPlainText -Force
 [pscredential]$StorageCredential = New-Object System.Management.Automation.PSCredential ($StorageUserAcct, $DriveMapPassword)
 # File Share Mapping prework
-$FileShare = '\\' + $StorageAccountName + '.file.' + $StorageSuffix + '\' + $FileShareName
+$FileShare = "\\$StorageAccountName.file.$StorageSuffix\$FileShareName"
 "--> " + $FileShare | Out-File $Log -Append
 If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
-Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
+Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() } #>
 
 Invoke-Command -ComputerName $ENV:COMPUTERNAME -Credential $VMCredential -ScriptBlock {
     # Installs the MSIX Packaging Tool
@@ -137,12 +122,12 @@ Invoke-Command -ComputerName $ENV:COMPUTERNAME -Credential $VMCredential -Script
     If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Using:Log -Append }
     Else { "-----ERROR-----> $Error" | Out-File $Using:Log -Append; $Error.Clear() }
     
-    # Map Drive for MSIX Share
+<#     # Map Drive for MSIX Share
     "Mapping MSIX Share to M:" | Out-File $Log -Append
     New-PSDrive -Name M -PSProvider FileSystem -Root $Using:FileShare -Credential $Using:StorageCredential -Persist
     # New-SmbGlobalMapping -RemotePath $FileShare -Credential $Credential -LocalPath 'M:'
     If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Using:Log -Append }
-    Else { "-----ERROR-----> $Error" | Out-File $Using:Log -Append; $Error.Clear() }
+    Else { "-----ERROR-----> $Error" | Out-File $Using:Log -Append; $Error.Clear() } #>
    
 }
 # Disable PSRemoting after Invoke Command
@@ -177,6 +162,18 @@ Set-NetConnectionProfile -InterfaceAlias Ethernet -NetworkCategory Public
 If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
 Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
 
+# Disable Edge First Run
+"Disable Edge First Run Experience via Registry" | Out-file $Log -Append
+reg add HKEY_USERS\.DEFAULT\Software\Policies\Microsoft\Edge /v HideFirstRunExperience /t REG_DWORD /d 1 /f
+If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
+Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
+
+# Disable Windows Welcome Screen
+"Disable Windows Welcome Screen via Registry" | Out-file $Log -Append
+reg add HKEY_USERS\.DEFAULT\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager /v SubscribedContent-310093Enabled /t REG_DWORD /d 0 /f
+If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
+Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
+
 # Create and install Self-Signed Code Signing Certificate
 "Creating Self Signed Code Signing Certificate" | Out-File $Log -Append
 $Cert = New-SelfSignedCertificate -FriendlyName "MSIX App Attach Test CodeSigning" -CertStoreLocation Cert:\LocalMachine\My -Subject "MSIXAppAttachTest" -Type CodeSigningCert
@@ -192,4 +189,5 @@ Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
 Restart-Computer -Force
 If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
 Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
+
 "-------------------------- END SCRIPT RUN ------------------------" | Out-File $Log -Append
