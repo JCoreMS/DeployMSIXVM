@@ -171,6 +171,24 @@ $Cert | Move-Item -Destination cert:\LocalMachine\TrustedPeople | Out-File $Log 
 If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
 Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
 
+# Create Desktop Shortcuts
+"Creating Desktop Shortcuts" | Out-File $Log -Append
+$DestinationPath = "C:\Users\Default\Desktop"
+$AppAttach = "$DestinationPath\MSIX App Attach.lnk"
+$AppAttachExe = "C:\Program Files\WindowsApps\Microsoft.MSIXPackagingTool_1.2023.319.0_x64__8wekyb3d8bbwe\MsixPackageTool.exe"
+$PSFToolExe = "C:\Program Files\WindowsApps\PsfTooling_6.3.0.0_x64__4y3s55xckzt36\PsfTooling.exe"
+$PSFTool = "$DestinationPath\PSFTool.lnk"
+$WshShell = New-Object -comObject WScript.Shell
+$Shortcut = $WshShell.CreateShortcut($AppAttach)
+$Shortcut.TargetPath = $AppAttachExe
+$Shortcut.Save()
+$WshShell = New-Object -comObject WScript.Shell
+$Shortcut = $WshShell.CreateShortcut($PSFTool)
+$Shortcut.TargetPath = $PSFToolExe
+$Shortcut.Save()
+If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
+Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
+
 "Rebooting VM...." | Out-File $Log -Append
 Restart-Computer -Force
 If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
