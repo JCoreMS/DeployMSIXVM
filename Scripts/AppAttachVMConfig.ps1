@@ -166,7 +166,7 @@ $Cert = New-SelfSignedCertificate -FriendlyName "MSIX App Attach Test CodeSignin
 If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
 Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
 
-"Moving Cert from Personal to Trusted People Store on Local Machine"
+"Moving Cert from Personal to Trusted People Store on Local Machine" | Out-File $Log -Append
 $Cert | Move-Item -Destination cert:\LocalMachine\TrustedPeople | Out-File $Log -Append
 If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
 Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
