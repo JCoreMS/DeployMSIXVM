@@ -27,7 +27,7 @@ Get-Date | Out-file $Log
 
 $Username = $ENV:COMPUTERNAME + '\' + $VMUserName
 $Password = ConvertTo-SecureString -String $VMUserPassword -AsPlainText -Force
-[pscredential]$Credential = New-Object System.Management.Automation.PSCredential ($Username, $Password)
+[pscredential]$VMCredential = New-Object System.Management.Automation.PSCredential ($Username, $Password)
 
 $Username | Out-File $Log -Append
 
