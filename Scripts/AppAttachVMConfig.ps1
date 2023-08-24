@@ -26,6 +26,9 @@ New-Item $Log
 Get-Date | Out-file $Log
 
 $Username = $ENV:COMPUTERNAME + '\' + $VMUserName
+$Password = ConvertTo-SecureString -String $VMUserPassword -AsPlainText -Force
+[pscredential]$Credential = New-Object System.Management.Automation.PSCredential ($Username, $Password)
+
 $Username | Out-File $Log -Append
 
 $Error.Clear()
@@ -43,6 +46,25 @@ Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
 
 "Installing Azure PowerShell Cmdlets" | Out-File $Log -Append
 Install-Module -Name Az.Storage -Force
+If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
+Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
+
+# Disable Edge First Run
+"Disable Edge First Run Experience via Registry" | Out-file $Log -Append
+reg add HKEY_USERS\.DEFAULT\Software\Policies\Microsoft\Edge /v HideFirstRunExperience /t REG_DWORD /d 1 /f
+If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
+Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
+
+# Disable Content Delivery auto download apps that they want to promote to users:
+"Disable Content Delivery auto download apps" | Out-File $Log -Append
+reg add HKEY_USERS\.DEFAULT\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager /v PreInstalledAppsEnabled /t REG_DWORD /d 0 /f
+reg add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager\Debug /v ContentDeliveryAllowedOverride /t REG_DWORD /d 0x2 /f
+If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
+Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
+
+# Disable Windows Welcome Screen
+"Disable Windows Welcome Screen via Registry" | Out-file $Log -Append
+reg add HKEY_USERS\.DEFAULT\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager /v SubscribedContent-310093Enabled /t REG_DWORD /d 0 /f
 If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
 Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
 
@@ -92,23 +114,6 @@ Enable-PSRemoting -Force
 If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
 Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
 
-# Credentials for Invoke-Command to run as Local Admin vs System
-"Creating Credentials for VM Admin" | Out-File $Log -Append
-$VMPassword = ConvertTo-SecureString -String $VMUserPassword -AsPlainText -Force
-[pscredential]$VMCredential = New-Object System.Management.Automation.PSCredential ($VMUserName, $VMPassword)
-If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
-Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
-
-<# # Credentials for Drive Mapping
-"Creating Credentials for Drive Mapping" | Out-File $Log -Append
-$DriveMapPassword = ConvertTo-SecureString -String $StoragePassword -AsPlainText -Force
-[pscredential]$StorageCredential = New-Object System.Management.Automation.PSCredential ($StorageUserAcct, $DriveMapPassword)
-# File Share Mapping prework
-$FileShare = "\\$StorageAccountName.file.$StorageSuffix\$FileShareName"
-"--> " + $FileShare | Out-File $Log -Append
-If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
-Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() } #>
-
 Invoke-Command -ComputerName $ENV:COMPUTERNAME -Credential $VMCredential -ScriptBlock {
     # Installs the MSIX Packaging Tool
     "Installing MSIX Packaging Tool as $Using:VMUserName" | Out-File $Using:Log -Append
@@ -150,27 +155,8 @@ Schtasks /Change /Tn "\Microsoft\Windows\WindowsUpdate\Scheduled Start" /Disable
 If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
 Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
 
-# Disable Content Delivery auto download apps that they want to promote to users:
-"Disable Content Delivery auto download apps" | Out-File $Log -Append
-reg add HKEY_USERS\.DEFAULT\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager /v PreInstalledAppsEnabled /t REG_DWORD /d 0 /f
-reg add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager\Debug /v ContentDeliveryAllowedOverride /t REG_DWORD /d 0x2 /f
-If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
-Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
-
 "Set Network Adapter back to Prublic Profile" | Out-file $Log -Append
 Set-NetConnectionProfile -InterfaceAlias Ethernet -NetworkCategory Public
-If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
-Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
-
-# Disable Edge First Run
-"Disable Edge First Run Experience via Registry" | Out-file $Log -Append
-reg add HKEY_USERS\.DEFAULT\Software\Policies\Microsoft\Edge /v HideFirstRunExperience /t REG_DWORD /d 1 /f
-If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
-Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
-
-# Disable Windows Welcome Screen
-"Disable Windows Welcome Screen via Registry" | Out-file $Log -Append
-reg add HKEY_USERS\.DEFAULT\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager /v SubscribedContent-310093Enabled /t REG_DWORD /d 0 /f
 If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
 Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
 
