@@ -51,7 +51,7 @@ Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
 
 # Disable Edge First Run
 "Disable Edge First Run Experience via Registry" | Out-file $Log -Append
-reg add HKEY_USERS\.DEFAULT\Software\Policies\Microsoft\Edge /v HideFirstRunExperience /t REG_DWORD /d 1 /f
+reg add HKEYLM\Software\Policies\Microsoft\Edge\Recommended /v Syncdisabled /t REG_DWORD /d 1 /f
 If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
 Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
 
@@ -64,7 +64,7 @@ Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
 
 # Disable Windows Welcome Screen
 "Disable Windows Welcome Screen via Registry" | Out-file $Log -Append
-reg add HKEY_USERS\.DEFAULT\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager /v SubscribedContent-310093Enabled /t REG_DWORD /d 0 /f
+reg add HKEY_USERS\.DEFAULT\Software\Policies\Microsoft\Windows\CloudContent /v disablewindowsSpotlightwindowswelcomeExperience /t REG_DWORD /d 1 /f
 If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
 Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
 
