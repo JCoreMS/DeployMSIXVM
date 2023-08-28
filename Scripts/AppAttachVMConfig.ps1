@@ -68,6 +68,7 @@ reg add HKEY_USERS\.DEFAULT\Software\Policies\Microsoft\Windows\CloudContent /v 
 reg add HKEY_USERS\.DEFAULT\Software\Microsoft\Windows\CurrentVersion\UserProfileEngagement /v ScoobeSystemSettingEnabled /t REG_DWORD /d 0 /f
 reg add HKEY_USERS\.DEFAULT\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager /v SubscribedContent-310093Enabled /t REG_DWORD /d 0 /f
 reg add HKEY_USERS\.DEFAULT\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager /v SubscribedContent-338389Enabled /t REG_DWORD /d 0 /f
+reg add HKLM\SOFTWARE\Policies\Microsoft\Windows\OOBE /v DisablePrivacyExperience /t REG_DWORD /d 1 /f
 If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
 Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
 
