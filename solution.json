@@ -5,19 +5,32 @@
     "_generator": {
       "name": "bicep",
       "version": "0.20.4.51522",
-      "templateHash": "13088741468376006782"
+      "templateHash": "1393177165637027262"
     }
   },
   "parameters": {
     "adminUsername": {
       "type": "string",
-      "defaultValue": "jcore",
+      "defaultValue": "vmadmin",
       "metadata": {
         "description": "Username for the Virtual Machine."
       }
     },
+    "adminPassUseKv": {
+      "type": "bool",
+      "metadata": {
+        "description": "Keyvault Option for Local Admin Password."
+      }
+    },
+    "adminPassKv": {
+      "type": "object"
+    },
+    "adminPassKvSecret": {
+      "type": "string"
+    },
     "adminPassword": {
       "type": "securestring",
+      "defaultValue": "[newGuid()]",
       "minLength": 12,
       "metadata": {
         "description": "Password for the Virtual Machine."
@@ -65,7 +78,7 @@
     },
     "vmName": {
       "type": "string",
-      "defaultValue": "vmMSIXTools",
+      "defaultValue": "vmAppAttach01",
       "maxLength": 15,
       "metadata": {
         "description": "Name of the virtual machine. (must be 15 characters or less)"
@@ -89,25 +102,6 @@
         "description": "Subnet to use for MSIX VM Tools VM."
       }
     },
-    "StorageAcctName": {
-      "type": "string",
-      "metadata": {
-        "description": "Storage Account where MSIX packages where be stored for AVD. (mapped for ease of copying resulting MSIX packages)"
-      }
-    },
-    "StorageAcctKey": {
-      "type": "securestring",
-      "metadata": {
-        "description": "Storage Account Key used for mapping drive to MSIX Storage / share."
-      }
-    },
-    "FileshareName": {
-      "type": "string",
-      "defaultValue": "msix",
-      "metadata": {
-        "description": "Share name for EXISTING MSIX package file share."
-      }
-    },
     "Timestamp": {
       "type": "string",
       "defaultValue": "[utcNow('u')]",
@@ -117,10 +111,12 @@
     }
   },
   "variables": {
-    "StorageSuffix": "[environment().suffixes.storage]",
+    "PostDeployScriptURI": "https://raw.githubusercontent.com/JCoreMS/DeployMSIXVM/Aug2023/Scripts/",
     "VNetSub": "[split(parameters('VNet').id, '/')[2]]",
     "VNetRG": "[split(parameters('VNet').id, '/')[4]]",
-    "VNetName": "[parameters('VNet').name]"
+    "VNetName": "[parameters('VNet').name]",
+    "KVLocalAdminSubId": "[split(parameters('adminPassKv').id, '/')[2]]",
+    "KVLocalAdminRG": "[split(parameters('adminPassKv').id, '/')[4]]"
   },
   "resources": [
     {
@@ -160,71 +156,163 @@
       ]
     },
     {
-      "type": "Microsoft.Compute/virtualMachines",
-      "apiVersion": "2022-03-01",
-      "name": "[parameters('vmName')]",
-      "location": "[parameters('location')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[format('linked_VMDeployment-{0}', guid(parameters('Timestamp')))]",
       "properties": {
-        "hardwareProfile": {
-          "vmSize": "[parameters('vmSize')]"
+        "expressionEvaluationOptions": {
+          "scope": "inner"
         },
-        "osProfile": {
-          "computerName": "[parameters('vmName')]",
-          "adminUsername": "[parameters('adminUsername')]",
-          "adminPassword": "[parameters('adminPassword')]"
-        },
-        "storageProfile": {
-          "imageReference": {
-            "publisher": "MicrosoftWindowsDesktop",
-            "offer": "[parameters('OSoffer')]",
-            "sku": "[parameters('OSVersion')]",
-            "version": "latest"
+        "mode": "Incremental",
+        "parameters": {
+          "AdminUserName": {
+            "value": "[parameters('adminUsername')]"
           },
-          "osDisk": {
-            "createOption": "FromImage",
-            "managedDisk": {
-              "storageAccountType": "[parameters('vmDiskType')]"
-            }
+          "AdminPassword": "[if(parameters('adminPassUseKv'), createObject('reference', createObject('keyVault', createObject('id', extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('KVLocalAdminSubId'), variables('KVLocalAdminRG')), 'Microsoft.KeyVault/vaults', parameters('adminPassKv').name)), 'secretName', parameters('adminPassKvSecret'))), createObject('value', parameters('adminPassword')))]",
+          "Location": {
+            "value": "[parameters('location')]"
+          },
+          "NIC": {
+            "value": "[format('nic-{0}', parameters('vmName'))]"
+          },
+          "OSoffer": {
+            "value": "[parameters('OSoffer')]"
+          },
+          "OSVersion": {
+            "value": "[parameters('OSVersion')]"
+          },
+          "PostDeployScriptURI": {
+            "value": "[variables('PostDeployScriptURI')]"
+          },
+          "Timestamp": {
+            "value": "[parameters('Timestamp')]"
+          },
+          "VMDiskType": {
+            "value": "[parameters('vmDiskType')]"
+          },
+          "VMName": {
+            "value": "[parameters('vmName')]"
+          },
+          "VMSize": {
+            "value": "[parameters('vmSize')]"
           }
         },
-        "networkProfile": {
-          "networkInterfaces": [
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.20.4.51522",
+              "templateHash": "4640866721526377412"
+            }
+          },
+          "parameters": {
+            "AdminUserName": {
+              "type": "string"
+            },
+            "AdminPassword": {
+              "type": "securestring"
+            },
+            "Location": {
+              "type": "string"
+            },
+            "NIC": {
+              "type": "string"
+            },
+            "OSoffer": {
+              "type": "string"
+            },
+            "OSVersion": {
+              "type": "string"
+            },
+            "PostDeployScriptURI": {
+              "type": "string"
+            },
+            "Timestamp": {
+              "type": "string"
+            },
+            "VMDiskType": {
+              "type": "string"
+            },
+            "VMName": {
+              "type": "string"
+            },
+            "VMSize": {
+              "type": "string"
+            }
+          },
+          "resources": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('nic-{0}', parameters('vmName')))]"
+              "type": "Microsoft.Compute/virtualMachines",
+              "apiVersion": "2022-03-01",
+              "name": "[parameters('VMName')]",
+              "location": "[parameters('Location')]",
+              "properties": {
+                "hardwareProfile": {
+                  "vmSize": "[parameters('VMSize')]"
+                },
+                "osProfile": {
+                  "computerName": "[parameters('VMName')]",
+                  "adminUsername": "[parameters('AdminUserName')]",
+                  "adminPassword": "[parameters('AdminPassword')]"
+                },
+                "storageProfile": {
+                  "imageReference": {
+                    "publisher": "MicrosoftWindowsDesktop",
+                    "offer": "[parameters('OSoffer')]",
+                    "sku": "[parameters('OSVersion')]",
+                    "version": "latest"
+                  },
+                  "osDisk": {
+                    "createOption": "FromImage",
+                    "managedDisk": {
+                      "storageAccountType": "[parameters('VMDiskType')]"
+                    }
+                  }
+                },
+                "networkProfile": {
+                  "networkInterfaces": [
+                    {
+                      "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('NIC'))]"
+                    }
+                  ]
+                },
+                "diagnosticsProfile": {
+                  "bootDiagnostics": {
+                    "enabled": false
+                  }
+                }
+              }
+            },
+            {
+              "type": "Microsoft.Compute/virtualMachines/extensions",
+              "apiVersion": "2022-03-01",
+              "name": "[format('{0}/{1}', parameters('VMName'), 'VmExtension-PS-InstallConfigAppAttachTools')]",
+              "location": "[parameters('Location')]",
+              "properties": {
+                "publisher": "Microsoft.Compute",
+                "type": "CustomScriptExtension",
+                "typeHandlerVersion": "1.10",
+                "settings": {
+                  "fileUris": [
+                    "[format('{0}AppAttachVMConfig.ps1', parameters('PostDeployScriptURI'))]"
+                  ],
+                  "timestamp": "[parameters('Timestamp')]"
+                },
+                "protectedSettings": {
+                  "commandToExecute": "[format('powershell -ExecutionPolicy Unrestricted -File AppAttachVMConfig.ps1 -VMUserName {0} -VMUserPassword {1} -PostDeployScriptURI {2}', parameters('AdminUserName'), parameters('AdminPassword'), parameters('PostDeployScriptURI'))]"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines', parameters('VMName'))]"
+              ]
             }
           ]
-        },
-        "diagnosticsProfile": {
-          "bootDiagnostics": {
-            "enabled": false
-          }
         }
       },
       "dependsOn": [
         "[resourceId('Microsoft.Network/networkInterfaces', format('nic-{0}', parameters('vmName')))]"
-      ]
-    },
-    {
-      "type": "Microsoft.Compute/virtualMachines/extensions",
-      "apiVersion": "2022-03-01",
-      "name": "[format('{0}/{1}', parameters('vmName'), 'VmExtension-PowerShell-CustomizeMSIXTools')]",
-      "location": "[parameters('location')]",
-      "properties": {
-        "publisher": "Microsoft.Compute",
-        "type": "CustomScriptExtension",
-        "typeHandlerVersion": "1.10",
-        "settings": {
-          "fileUris": [
-            "https://raw.githubusercontent.com/JCoreMS/DeployMSIXVM/main/Scripts/New-AzureMsixAppAttachImage.ps1"
-          ],
-          "timestamp": "[parameters('Timestamp')]"
-        },
-        "protectedSettings": {
-          "commandToExecute": "[format('powershell -ExecutionPolicy Unrestricted -File New-AzureMsixAppAttachImage.ps1 -FileShareName {0} -StorageAccountKey {1} -StorageAccountName ${2} -VMUserName {3} -VMUserPassword {4} -StorageSuffix {5}', parameters('FileshareName'), parameters('StorageAcctKey'), parameters('StorageAcctName'), parameters('adminUsername'), parameters('adminPassword'), variables('StorageSuffix'))]"
-        }
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
       ]
     }
   ]

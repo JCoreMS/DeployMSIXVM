@@ -5,17 +5,14 @@ This deployment will create a VM from the Microsoft Gallery and configure and in
 - PSFTooling App
 - Disables Plug and Play service (prevents new disk pop-up when mounting VHDs)
 - Creates C:\MSIX directory with apps and script to convert MSIX to VHD
-- Maps drive to File Share for moving over completed packages used by AVD
+- Creates a self-signed certificate and places it within the "Trusted People Store" for signing packages
+  (Consider a Certificate from a Certificate Authority for Production Use)
 
 ## Pre-requisites
 
 - Azure Tenant and Subscription
 - Resource Group
 - VNet and Subnet
-- Storage Account with Azure File Share where completed packages will be stored
-- Keyvault for storing credentials (Resource ID)
-- Keyvault Secret for VM Local Admin password (URL for 'Secret Identifier')
-- Appropriate Permissions on Keyvault and Resource Group to create the VM and read the Keyvault
 
 ## Deploy via Portal
 
