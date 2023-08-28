@@ -18,15 +18,18 @@
     },
     "adminPassUseKv": {
       "type": "bool",
+      "defaultValue": false,
       "metadata": {
         "description": "Keyvault Option for Local Admin Password."
       }
     },
     "adminPassKv": {
-      "type": "object"
+      "type": "object",
+      "defaultValue": {}
     },
     "adminPassKvSecret": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": ""
     },
     "adminPassword": {
       "type": "securestring",
