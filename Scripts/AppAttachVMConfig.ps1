@@ -1,6 +1,9 @@
-# Prerequisites
-# Stage the application and its associated conversion XML file in an Azure Storage Account Container
-# Established an SMB share for the MSIX App Attach images
+# Purpose: 
+# Configure VM for App Attach package creation. Installs PsfTooling and MSIX App Attach Windows Store based applications and sets recommended registry settings.
+
+# Updates:
+# 8/28/2023 (JCore) - Updated from original to remove Drive Mapping, add latest package versions, create desktop shortcuts and remove startup for Windows and Edge.
+#
 
 Param(
 
@@ -17,8 +20,10 @@ Param(
 # URLs for MSIX and PsfTooling packages
 # version 1.2023.319.0
 $MSIXPackageURL = "https://download.microsoft.com/download/d/0/0/d0043667-b1db-4060-9c82-eaee1fa619e8/493b543c21624db8832da8791ebf98f3.msixbundle"
-
 $PsfToolPackageURL = "https://www.tmurgent.com/AppV/Tools/PsfTooling/PsfTooling-6.3.0.0-x64.msix"
+
+$AppAttachInstallFolder = "Microsoft.MSIXPackagingTool_1.2023.319.0_x64__8wekyb3d8bbwe"
+$PsfToolInstallFolder = "PsfTooling_6.3.0.0_x64__4y3s55xckzt36"
 
 # Create Log file for output and troublehsooting
 $Log = "C:\PostConfig.log"
@@ -179,8 +184,8 @@ Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
 "Creating Desktop Shortcuts" | Out-File $Log -Append
 $DestinationPath = "C:\Users\Public\Desktop"
 $AppAttach = "$DestinationPath\MSIX App Attach.lnk"
-$AppAttachExe = "C:\Program Files\WindowsApps\Microsoft.MSIXPackagingTool_1.2023.319.0_x64__8wekyb3d8bbwe\MsixPackageTool.exe"
-$PSFToolExe = "C:\Program Files\WindowsApps\PsfTooling_6.3.0.0_x64__4y3s55xckzt36\PsfTooling.exe"
+$AppAttachExe = "C:\Program Files\WindowsApps\$AppAttachInstallFolder\MsixPackageTool.exe"
+$PSFToolExe = "C:\Program Files\WindowsApps\$PsfToolInstallFolder\PsfTooling.exe"
 $PSFTool = "$DestinationPath\PSFTool.lnk"
 $MSIXfldr = "$DestinationPath\MSIX Folder.lnk"
 $MSIXfldrLoc = "C:\MSIX\"
