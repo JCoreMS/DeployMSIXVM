@@ -159,7 +159,7 @@ Schtasks /Change /Tn "\Microsoft\Windows\WindowsUpdate\Scheduled Start" /Disable
 If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
 Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
 
-"Set Network Adapter back to Prublic Profile" | Out-file $Log -Append
+"Set Network Adapter back to Public Profile" | Out-file $Log -Append
 Set-NetConnectionProfile -InterfaceAlias Ethernet -NetworkCategory Public
 If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
 Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
@@ -177,11 +177,13 @@ Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
 
 # Create Desktop Shortcuts
 "Creating Desktop Shortcuts" | Out-File $Log -Append
-$DestinationPath = "C:\Users\Default\Desktop"
+$DestinationPath = "C:\Users\Public\Desktop"
 $AppAttach = "$DestinationPath\MSIX App Attach.lnk"
 $AppAttachExe = "C:\Program Files\WindowsApps\Microsoft.MSIXPackagingTool_1.2023.319.0_x64__8wekyb3d8bbwe\MsixPackageTool.exe"
 $PSFToolExe = "C:\Program Files\WindowsApps\PsfTooling_6.3.0.0_x64__4y3s55xckzt36\PsfTooling.exe"
 $PSFTool = "$DestinationPath\PSFTool.lnk"
+$MSIXfldr = "$DestinationPath\MSIX Folder.lnk"
+$MSIXfldrLoc = "C:\MSIX\"
 $WshShell = New-Object -comObject WScript.Shell
 $Shortcut = $WshShell.CreateShortcut($AppAttach)
 $Shortcut.TargetPath = $AppAttachExe
@@ -189,6 +191,10 @@ $Shortcut.Save()
 $WshShell = New-Object -comObject WScript.Shell
 $Shortcut = $WshShell.CreateShortcut($PSFTool)
 $Shortcut.TargetPath = $PSFToolExe
+$Shortcut.Save()
+$WshShell = New-Object -comObject WScript.Shell
+$Shortcut = $WshShell.CreateShortcut($MSIXfldr)
+$Shortcut.TargetPath = $MSIXfldrLoc
 $Shortcut.Save()
 If ($Error.Count -eq 0) { ".... COMPLETED!" | Out-File $Log -Append }
 Else { "-----ERROR-----> $Error" | Out-File $Log -Append; $Error.Clear() }
