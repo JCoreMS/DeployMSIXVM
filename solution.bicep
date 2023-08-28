@@ -49,7 +49,7 @@ param SubnetName string
 @description('Do not change. Used for deployment purposes only.')
 param Timestamp string = utcNow('u')
 
-var PostDeployScriptURI = 'https://github.com/Azure/avdaccelerator/blob/main/workload/scripts/appAttachToolsVM/'
+var PostDeployScriptURI = 'https://raw.githubusercontent.com/JCoreMS/DeployMSIXVM/Aug2023/Scripts/'
 var VNetSub = split(VNet.id, '/')[2]
 var VNetRG = split(VNet.id, '/')[4]
 var VNetName = VNet.name
