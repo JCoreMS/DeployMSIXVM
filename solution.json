@@ -111,7 +111,7 @@
     }
   },
   "variables": {
-    "PostDeployScriptURI": "https://github.com/Azure/avdaccelerator/blob/main/workload/scripts/appAttachToolsVM/",
+    "PostDeployScriptURI": "https://raw.githubusercontent.com/JCoreMS/DeployMSIXVM/Aug2023/Scripts/",
     "VNetSub": "[split(parameters('VNet').id, '/')[2]]",
     "VNetRG": "[split(parameters('VNet').id, '/')[4]]",
     "VNetName": "[parameters('VNet').name]",
