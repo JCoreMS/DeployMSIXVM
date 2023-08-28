@@ -1,10 +1,16 @@
 @description('Username for the Virtual Machine.')
-param adminUsername string = 'jcore'
+param adminUsername string = 'vmadmin'
+
+@description('Keyvault Option for Local Admin Password.')
+param adminPassUseKv bool
+
+param adminPassKv object
+param adminPassKvSecret string
 
 @description('Password for the Virtual Machine.')
 @minLength(12)
 @secure()
-param adminPassword string
+param adminPassword string = newGuid()
 
 @description('Create the VM with a Public IP to access the Virtual Machine?')
 param publicIPAllowed bool = false
@@ -26,7 +32,7 @@ param location string = resourceGroup().location
 
 @description('Name of the virtual machine. (must be 15 characters or less)')
 @maxLength(15)
-param vmName string = 'vmMSIXTools'
+param vmName string = 'vmAppAttach01'
 
 @description('Virtual Network to attach MSIX Tools VM to.')
 param VNet object = {
@@ -39,24 +45,21 @@ param VNet object = {
 @description('Subnet to use for MSIX VM Tools VM.')
 param SubnetName string
 
-@description('Storage Account where MSIX packages where be stored for AVD. (mapped for ease of copying resulting MSIX packages)')
-param StorageAcctName string
-
-@secure()
-@description('Storage Account Key used for mapping drive to MSIX Storage / share.')
-param StorageAcctKey string
-
-@description('Share name for EXISTING MSIX package file share.')
-param FileshareName string = 'msix'
 
 @description('Do not change. Used for deployment purposes only.')
 param Timestamp string = utcNow('u')
 
-
-var StorageSuffix = environment().suffixes.storage
+var PostDeployScriptURI = 'https://github.com/Azure/avdaccelerator/blob/main/workload/scripts/appAttachToolsVM/'
 var VNetSub = split(VNet.id, '/')[2]
 var VNetRG = split(VNet.id, '/')[4]
 var VNetName = VNet.name
+var KVLocalAdminSubId = split(adminPassKv.id, '/')[2]
+var KVLocalAdminRG = split(adminPassKv.id, '/')[4]
+
+resource kvVMPassword 'Microsoft.KeyVault/vaults@2023-02-01' existing = if(adminPassUseKv) {
+  name: adminPassKv.name
+  scope: resourceGroup(KVLocalAdminSubId, KVLocalAdminRG)
+}
 
 resource pip 'Microsoft.Network/publicIPAddresses@2022-01-01' = if(publicIPAllowed) {
   name: 'pip-${vmName}'
@@ -90,61 +93,19 @@ resource nic 'Microsoft.Network/networkInterfaces@2022-01-01' = {
   }
 }
 
-resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
-  name: vmName
-  location: location
-  properties: {
-    hardwareProfile: {
-      vmSize: vmSize
-    }
-    osProfile: {
-      computerName: vmName
-      adminUsername: adminUsername
-      adminPassword: adminPassword
-    }
-    storageProfile: {
-      imageReference: {
-        publisher: 'MicrosoftWindowsDesktop'
-        offer: OSoffer
-        sku: OSVersion
-        version: 'latest'
-      }
-      osDisk: {
-        createOption: 'FromImage'
-        managedDisk: {
-          storageAccountType: vmDiskType
-        }
-      }
-    }
-    networkProfile: {
-      networkInterfaces: [
-        {
-          id: resourceId('Microsoft.Network/networkInterfaces', nic.name)
-        }
-      ]
-    }
-    diagnosticsProfile: {
-      bootDiagnostics: {
-        enabled: false
-      }
-    }
-  }
-}
-
-resource configVm 'Microsoft.Compute/virtualMachines/extensions@2022-03-01' = {
-  name: 'VmExtension-PowerShell-CustomizeMSIXTools'
-  location: location
-  parent: vm
-  properties: {
-    publisher: 'Microsoft.Compute'
-    type: 'CustomScriptExtension'
-    typeHandlerVersion: '1.10'
-    settings: {
-      fileUris: [ 'https://raw.githubusercontent.com/JCoreMS/DeployMSIXVM/main/Scripts/New-AzureMsixAppAttachImage.ps1' ]
-      timestamp: Timestamp
-    }
-    protectedSettings: {
-      commandToExecute: 'powershell -ExecutionPolicy Unrestricted -File New-AzureMsixAppAttachImage.ps1 -FileShareName ${FileshareName} -StorageAccountKey ${StorageAcctKey} -StorageAccountName $${StorageAcctName} -VMUserName ${adminUsername} -VMUserPassword ${adminPassword} -StorageSuffix ${StorageSuffix}'
-    }
+module vmDeploy './modules/VM.bicep' = {
+  name: 'linked_VMDeployment-${guid(Timestamp)}'
+  params: {   
+    AdminUserName: adminUsername
+    AdminPassword: adminPassUseKv ? kvVMPassword.getSecret(adminPassKvSecret) : adminPassword
+     Location: location
+    NIC: nic.name
+    OSoffer: OSoffer
+    OSVersion: OSVersion
+    PostDeployScriptURI: PostDeployScriptURI
+    Timestamp: Timestamp
+    VMDiskType: vmDiskType
+    VMName: vmName
+    VMSize: vmSize
   }
 }
